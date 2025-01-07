@@ -1,9 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using StockTracker.Data;
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<StockTrackerContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("StockTrackerContext") ?? throw new InvalidOperationException("Connection string 'StockTrackerContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
