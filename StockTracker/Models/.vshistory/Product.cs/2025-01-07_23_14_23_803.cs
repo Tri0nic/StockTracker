@@ -13,6 +13,6 @@ namespace StockTracker.Models
         [Url]
         public string Link { get; set; }
 
-        public bool IsTracked { get; set; }
+        public bool IsTracked { get; set; } = false;
     }
 }
