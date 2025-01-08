@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StockTracker.Data;
 using StockTracker.Models;
+using StockTracker.Services;
 
 namespace StockTracker.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly StockTrackerContext _context;
+        private readonly NotificationService _notificationService;
 
-        public ProductsController(StockTrackerContext context)
+        public ProductsController(StockTrackerContext context, NotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         // GET: Products
@@ -159,11 +162,6 @@ namespace StockTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateIsTracked(int id, bool isTracked)
         {
-            if (_context.Product == null)
-            {
-                return Problem("Entity set 'StockTrackerContext.Product' is null.");
-            }
-
             var product = await _context.Product.FindAsync(id);
             if (product == null)
             {
@@ -171,25 +169,29 @@ namespace StockTracker.Controllers
             }
 
             product.IsTracked = isTracked;
-            try
-            {
-                _context.Update(product);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _context.Update(product);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
+
+        //Сделать метод Track, который будет ссылаться на парсер? Вместо SendNotifications.
+        //А SendNotifications вызывать уже в методе Track если парсер вернул true??
+        [HttpPost]
+        public async Task<IActionResult> SendNotifications(bool isEmailEnabled, bool isTelegramEnabled, int frequencyInMinutes)
+        {
+            // Загружаем отслеживаемые продукты
+            var products = await _context.Product.Where(p => p.IsTracked).ToListAsync();
+
+            // Вызываем NotificationService
+            _notificationService.Notify(products, isEmailEnabled, isTelegramEnabled, frequencyInMinutes); // frequencyInMinutes не используется здесь
+
+            TempData.Keep(); // Сохраняем настройки
+
+            return RedirectToAction(nameof(Index)); // Возвращаемся на главную страницу
+        }
+
+
 
         private bool ProductExists(int id)
         {

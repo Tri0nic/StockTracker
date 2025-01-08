@@ -1,14 +1,71 @@
 ﻿@model IEnumerable<StockTracker.Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Products";
 }
 
-<h1>Index</h1>
+<h1>Products</h1>
+
+<!-- Настройки отправки уведомлений -->
+<div>
+    <form asp-action="SendNotifications" method="post">
+        <div>
+            <label>
+                <input type="checkbox" name="isEmailEnabled" value="true" @(ViewBag.IsEmailEnabled ?? false ? "checked" : "") />
+                Enable Email Notifications
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" name="isTelegramEnabled" value="true" @(ViewBag.IsTelegramEnabled ?? false ? "checked" : "") />
+                Enable Telegram Notifications
+            </label>
+        </div>
+        <div>
+            <label>
+                Frequency (minutes):
+                <input type="number" name="frequencyInMinutes" value="@ViewBag.FrequencyInMinutes" min="1" class="form-control" />
+            </label>
+        </div>
+        <button type="submit" class="btn btn-success">Start</button>
+    </form>
+</div>
+
+<!-- TODO: Таймер обратного отсчета -->
+<div>
+    <h3>Next notification in: <span id="countdownTimer">@ViewBag.FrequencyInMinutes:00</span></h3>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const frequencyInMinutes = parseInt("@ViewBag.FrequencyInMinutes" || 5) * 60; // Convert minutes to seconds
+        let timeLeft = frequencyInMinutes;
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById("countdownTimer").textContent =
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeLeft > 0) {
+                timeLeft--;
+            } else {
+                timeLeft = frequencyInMinutes; // Reset timer
+            }
+        }
+
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+        updateTimer(); // Initial call to set the timer immediately
+    });
+</script>
+
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<!-- Таблица с товарами -->
 <table class="table">
     <thead>
         <tr>

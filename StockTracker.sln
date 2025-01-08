@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTracker", "StockTracker\StockTracker.csproj", "{EA420522-F31D-4062-997C-44C716BD8C77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockTracker", "StockTracker\StockTracker.csproj", "{EA420522-F31D-4062-997C-44C716BD8C77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
