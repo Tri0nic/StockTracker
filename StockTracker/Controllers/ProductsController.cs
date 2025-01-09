@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using FluentScheduler;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StockTracker.Data;
 using StockTracker.Models;
+using StockTracker.Parsers;
 using StockTracker.Services;
 
 namespace StockTracker.Controllers
@@ -15,11 +18,13 @@ namespace StockTracker.Controllers
     {
         private readonly StockTrackerContext _context;
         private readonly NotificationService _notificationService;
+        private readonly ParserService _parserService;
 
-        public ProductsController(StockTrackerContext context, NotificationService notificationService)
+        public ProductsController(StockTrackerContext context, NotificationService notificationService, ParserService parserService)
         {
             _context = context;
             _notificationService = notificationService;
+            _parserService = parserService;
         }
 
         // GET: Products
@@ -178,20 +183,30 @@ namespace StockTracker.Controllers
         //Сделать метод Track, который будет ссылаться на парсер? Вместо SendNotifications.
         //А SendNotifications вызывать уже в методе Track если парсер вернул true??
         [HttpPost]
+        //TODO: Изменить название?
+        //TODO: Передавать коллекцию сервисов вместо явных isEmailEnabled isTelegramEnabled IEnumerable<IMessageService> notificationServices
+        //, bool isEmailEnabled, bool isTelegramEnabled
+        //IEnumerable<bool> notifications
         public async Task<IActionResult> SendNotifications(bool isEmailEnabled, bool isTelegramEnabled, int frequencyInMinutes)
         {
-            // Загружаем отслеживаемые продукты
             var products = await _context.Product.Where(p => p.IsTracked).ToListAsync();
 
-            // Вызываем NotificationService
-            _notificationService.Notify(products, isEmailEnabled, isTelegramEnabled, frequencyInMinutes); // frequencyInMinutes не используется здесь
+            //TODO: сделать цикл для каждого _messageServices отправлять сообщение?
+            JobManager.AddJob(() => ParseAndNotify(products, isEmailEnabled, isTelegramEnabled),
+            schedule => schedule.ToRunNow().AndEvery(frequencyInMinutes).Minutes());
 
             TempData.Keep(); // Сохраняем настройки
 
             return RedirectToAction(nameof(Index)); // Возвращаемся на главную страницу
         }
 
+        public void ParseAndNotify(IEnumerable<Product> products, bool isEmailEnabled, bool isTelegramEnabled)
+        {
+            var productIsAvailable = _parserService.ParseProducts(products);
 
+            if (productIsAvailable)
+                _notificationService.Notify(products, isEmailEnabled, isTelegramEnabled);
+        }
 
         private bool ProductExists(int id)
         {

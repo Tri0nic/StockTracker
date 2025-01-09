@@ -1,0 +1,41 @@
+﻿using StockTracker.Models;
+using StockTracker.Services;
+
+namespace StockTracker.Parsers
+{
+    public class ParserService
+    {
+        private readonly Dictionary<string, IParser> _parsers;
+
+        public ParserService()
+        {
+            _parsers = new Dictionary<string, IParser>
+        {
+            { "Яндекс Маркет", new YandexMarketParser() },
+            { "Мосигра", new MosigraParser() }
+        };
+        }
+
+        public bool ParseProducts(IEnumerable<Product> products)
+        {
+            foreach (var product in products)
+            {
+                if (ParseProduct(product))
+                    return true;
+            }
+            return false;
+        }
+
+        public bool ParseProduct(Product product)
+        {
+            if (_parsers.TryGetValue(product.Shop, out var parser))
+            {
+                return parser.Parse(product);
+            }
+            else
+            {
+                throw new NotImplementedException($"Парсинг для магазина {product.Shop} не реализован.");
+            }
+        }
+    }
+}

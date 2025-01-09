@@ -12,21 +12,14 @@ namespace StockTracker.Services
             _messageServices = messageServices;
         }
 
-        public void Notify(IEnumerable<Product> products, bool isEmailEnabled, bool isTelegramEnabled, int frequencyInMinutes)
-        {
-            //TODO: сделать цикл для каждого _messageServices отправлять сообщение?
-            JobManager.AddJob(() => CreateLetter(products, isEmailEnabled, isTelegramEnabled),
-            schedule => schedule.ToRunNow().AndEvery(frequencyInMinutes).Minutes());
-        }
-
-        public void CreateLetter(IEnumerable<Product> products, bool isEmailEnabled, bool isTelegramEnabled)
+        public void Notify(IEnumerable<Product> products, bool isEmailEnabled, bool isTelegramEnabled)
         {
             var letter = "";
             //TODO: переделать под одну отправку всех писем, а не по одному; Создать список/словарь
             //TODO: refactor - прокинуть isEmailEnabled и isTelegramEnabled через DI?
             foreach (var product in products.Where(p => p.IsTracked))
             {
-                letter += $"\n {product}";
+                letter += $"\n {product.Shop} --- {product.Link}";
             }
 
             foreach (var service in _messageServices)

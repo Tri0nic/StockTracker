@@ -1,7 +1,9 @@
-﻿namespace StockTracker.Parsers
+﻿using StockTracker.Models;
+
+namespace StockTracker.Parsers
 {
     public interface IParser
     {
-        bool Parse(string input);
+        bool Parse(Product products);
     }
 }
