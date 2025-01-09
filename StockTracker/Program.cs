@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using StockTracker.Configurations;
 using StockTracker.Data;
 using StockTracker.Parsers;
 using StockTracker.Services;
@@ -13,6 +14,7 @@ builder.Services.AddTransient<ParserService>();
 builder.Services.AddTransient<NotificationService>();
 builder.Services.AddTransient<IMessageService, EmailService>();
 builder.Services.AddTransient<IMessageService, TelegramService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddControllersWithViews();
 

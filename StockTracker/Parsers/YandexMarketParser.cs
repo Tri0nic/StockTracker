@@ -16,5 +16,8 @@ namespace StockTracker.Parsers
         {
             return true;
         }
+
+
+
     }
 }
