@@ -1,5 +1,4 @@
-﻿using FluentScheduler;
-using StockTracker.Models;
+﻿using StockTracker.Models;
 
 namespace StockTracker.Services
 {

@@ -12,25 +12,25 @@ namespace StockTracker.Parsers
                 #region Selenium
 
                 IWebDriver driver = new ChromeDriver();
-                driver.Url = @"https://market.yandex.ru/product--nastolnaia-igra-teibl-taim-2-kollektsionnyi-sbornik-igr/898017986?sku=103676455619&uniqueId=115689385&businessId=115689385&nid=59742";
+                driver.Url = url;
 
-                string IsAvailable = "";
                 try
                 {
-
-                    IsAvailable = (driver.FindElement(By.XPath("//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))).Text;
-                    await Task.Delay(1000);
+                    string IsAvailable = (driver.FindElement(By.XPath("//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))).Text;
+                    return false;
                 }
                 catch (Exception)
                 {
-                    await Console.Out.WriteLineAsync("Не удалось спарсить!");
+                    return true;
                 }
 
                 #endregion
             }
-            catch { await Console.Out.WriteLineAsync("Не удалось спарсить!"); }
+            catch
+            {
+                await Console.Out.WriteLineAsync($"Не удалось подключиться к сайту магазина по ссылке: {url}");
+            }
 
-            //Заглушка
             return false;
         }
     }

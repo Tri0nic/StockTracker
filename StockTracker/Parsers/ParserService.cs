@@ -1,10 +1,11 @@
-﻿using StockTracker.Models;
-using StockTracker.Services;
+﻿using OpenQA.Selenium;
+using StockTracker.Models;
 
 namespace StockTracker.Parsers
 {
     public class ParserService
     {
+        #region Паттерн стратегия
         private readonly Dictionary<string, IParser> _parsers;
 
         public ParserService()
@@ -37,5 +38,14 @@ namespace StockTracker.Parsers
                 throw new NotImplementedException($"Парсинг для магазина {product.Shop} не реализован.");
             }
         }
+        #endregion
+
+        #region Вспомогательные методы
+        public static void ClickElement(IWebDriver driver, string xpath)
+        {
+            var element = driver.FindElement(By.XPath(xpath));
+            element.Click();
+        }
+        #endregion
     }
 }
