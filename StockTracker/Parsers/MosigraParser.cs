@@ -19,8 +19,8 @@ namespace StockTracker.Parsers
                 {
                     // открываем список городов
                     ClickElement(driver, "//*[@id=\"app-main\"]/header/div[2]/div/div/div[1]/button");
-
-                    //выбираем Москву
+                    
+                    // выбираем Москву
                     ClickElement(driver, "//*[@id=\"app-main\"]/header/div[1]/div/ul/li[1]/span/a");
 
                     string IsAvailable = (driver.FindElement(By.XPath("//*[@id=\"app-main\"]/main/section[1]/article/section[1]/noindex/div/span[2]/b"))).Text;

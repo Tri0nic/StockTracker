@@ -46,6 +46,13 @@ namespace StockTracker.Parsers
             var element = driver.FindElement(By.XPath(xpath));
             element.Click();
         }
+
+        public static void EnterText(IWebDriver driver, string xpath, string text)
+        {
+            var element = driver.FindElement(By.XPath(xpath));
+            element.Clear();
+            element.SendKeys(text);
+        }
         #endregion
     }
 }
