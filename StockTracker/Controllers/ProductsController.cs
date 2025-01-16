@@ -200,12 +200,14 @@ namespace StockTracker.Controllers
             return RedirectToAction(nameof(Index)); // Возвращаемся на главную страницу
         }
 
-        public void ParseAndNotify(IEnumerable<Product> products, bool isEmailEnabled, bool isTelegramEnabled)
+        public async Task ParseAndNotify(IEnumerable<Product> products, bool isEmailEnabled, bool isTelegramEnabled)
         {
-            var productIsAvailable = _parserService.ParseProducts(products);
+            var productIsAvailable = await _parserService.ParseProducts(products);
 
             if (productIsAvailable)
+            {
                 _notificationService.Notify(products, isEmailEnabled, isTelegramEnabled);
+            }
         }
 
         private bool ProductExists(int id)

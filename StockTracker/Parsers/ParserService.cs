@@ -16,21 +16,21 @@ namespace StockTracker.Parsers
         };
         }
 
-        public bool ParseProducts(IEnumerable<Product> products)
+        public async Task<bool> ParseProducts(IEnumerable<Product> products)
         {
             foreach (var product in products)
             {
-                if (ParseProduct(product))
+                if (await ParseProduct(product))
                     return true;
             }
             return false;
         }
 
-        public bool ParseProduct(Product product)
+        public async Task<bool> ParseProduct(Product product)
         {
-            if (_parsers.TryGetValue(product.Shop, out var parser))
+            if (_parsers.TryGetValue(product.Shop, out var parser)) // Заменить Shop на ProductName
             {
-                return parser.Parse(product);
+                return await parser.Parse(product.Link);
             }
             else
             {
