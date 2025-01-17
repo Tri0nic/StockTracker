@@ -21,6 +21,7 @@ namespace StockTracker.Parsers
         {
             foreach (var product in products)
             {
+                await Console.Out.WriteLineAsync($"\nНачали парсинг! {product.ProductName}\n");
                 if (await ParseProduct(product))
                     return true;
             }
@@ -29,7 +30,7 @@ namespace StockTracker.Parsers
 
         public async Task<bool> ParseProduct(Product product)
         {
-            if (_parsers.TryGetValue(product.Shop, out var parser)) // Заменить Shop на ProductName
+            if (_parsers.TryGetValue(product.Shop, out var parser))
             {
                 return await parser.Parse(product.Link);
             }

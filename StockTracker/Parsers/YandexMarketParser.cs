@@ -17,6 +17,7 @@ namespace StockTracker.Parsers
                 try
                 {
                     string IsAvailable = (driver.FindElement(By.XPath("//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))).Text;
+                    await Console.Out.WriteLineAsync("\nЗакончил парсинг!\n");
                     return false;
                 }
                 catch (Exception)

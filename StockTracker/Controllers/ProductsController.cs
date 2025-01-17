@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using FluentScheduler;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -180,6 +181,8 @@ namespace StockTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        private static bool _isRunning = false;
         //Сделать метод Track, который будет ссылаться на парсер? Вместо SendNotifications.
         //А SendNotifications вызывать уже в методе Track если парсер вернул true??
         [HttpPost]
@@ -192,8 +195,47 @@ namespace StockTracker.Controllers
             var products = await _context.Product.Where(p => p.IsTracked).ToListAsync();
 
             //TODO: сделать цикл для каждого _messageServices отправлять сообщение?
-            JobManager.AddJob(() => ParseAndNotify(products, isEmailEnabled, isTelegramEnabled),
-            schedule => schedule.ToRunNow().AndEvery(frequencyInMinutes).Minutes());
+            //JobManager.AddJob(() => ParseAndNotify(products, isEmailEnabled, isTelegramEnabled),
+            //schedule => schedule.ToRunNow().AndEvery(frequencyInMinutes).Minutes());
+
+            //TODO: убрать этот цикл в отдельный класс
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    var cycleStartTime = DateTime.Now;
+
+                    if (_isRunning)
+                    {
+                        Console.WriteLine("Previous task is still running. Skipping this cycle.");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            _isRunning = true;
+                            await ParseAndNotify(products, isEmailEnabled, isTelegramEnabled);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error: {ex.Message}");
+                        }
+                        finally
+                        {
+                            _isRunning = false;
+                        }
+                    }
+
+                    var elapsedTime = DateTime.Now - cycleStartTime;
+                    var delayTime = TimeSpan.FromMinutes(frequencyInMinutes) - elapsedTime;
+
+                    if (delayTime > TimeSpan.Zero)
+                    {
+                        await Task.Delay(delayTime);
+                    }
+                }
+            });
+
 
             TempData.Keep(); // Сохраняем настройки
 
