@@ -69,16 +69,19 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th style="width: 15%;">
                 @Html.DisplayNameFor(model => model.Shop)
             </th>
-            <th>
+            <th style="width: 50%;">
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th style="width: 10%;">
                 @Html.DisplayNameFor(model => model.Link)
             </th>
-            <th>
+            <th style="width: 10%;">
                 @Html.DisplayNameFor(model => model.IsTracked)
             </th>
-            <th></th>
+            <th style="width: 15%;"></th>
         </tr>
     </thead>
     <tbody>
@@ -89,7 +92,10 @@
                     @Html.DisplayFor(modelItem => item.Shop)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Link)
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.Raw($"<a href='{item.Link}' target='_blank' rel='noopener noreferrer'>Ссылка</a>")
                 </td>
                 <td>
                     <form asp-action="UpdateIsTracked" method="post" style="display:inline;">

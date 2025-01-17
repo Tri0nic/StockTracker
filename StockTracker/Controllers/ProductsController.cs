@@ -64,7 +64,7 @@ namespace StockTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Shop,Link,IsTracked")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Shop,ProductName,Link,IsTracked")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -96,7 +96,7 @@ namespace StockTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Shop,Link,IsTracked")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Shop,ProductName,Link,IsTracked")] Product product)
         {
             if (id != product.Id)
             {
