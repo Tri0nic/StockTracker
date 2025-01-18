@@ -25,6 +25,8 @@ namespace StockTracker.Services
                 {
                     mailMessage.From = new MailAddress(_emailSettings.Username);
                     mailMessage.Subject = "Товар доступен на сайте";
+
+                    mailMessage.IsBodyHtml = true;
                     mailMessage.Body = message;
 
                     // Добавляем всех получателей из массива

@@ -244,11 +244,11 @@ namespace StockTracker.Controllers
 
         public async Task ParseAndNotify(IEnumerable<Product> products, bool isEmailEnabled, bool isTelegramEnabled)
         {
-            var productIsAvailable = await _parserService.ParseProducts(products);
+            var availableProducts = await _parserService.ParseProducts(products);
 
-            if (productIsAvailable)
+            if (availableProducts != null)
             {
-                _notificationService.Notify(products, isEmailEnabled, isTelegramEnabled);
+                _notificationService.Notify(availableProducts, isEmailEnabled, isTelegramEnabled);
             }
         }
 

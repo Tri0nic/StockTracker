@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using StockTracker.Models;
+using System.Collections.Generic;
 
 namespace StockTracker.Parsers
 {
@@ -18,19 +19,20 @@ namespace StockTracker.Parsers
         };
         }
 
-        public async Task<bool> ParseProducts(IEnumerable<Product> products)
+        public async Task<IEnumerable<Product>> ParseProducts(IEnumerable<Product> products)
         {
+            var availableProducts = new List<Product>();
+
             foreach (var product in products)
             {
                 await Console.Out.WriteLineAsync($"\nНачали парсинг! {product.ProductName}\n");
                 if (await ParseProduct(product))
                 {
                     await Console.Out.WriteLineAsync($"\nТОВАР ПОЯВИЛСЯ НА САЙТЕ: {product.Shop}, {product.ProductName}\n");
-                    return true;
+                    availableProducts.Add(product);
                 }
-                    
             }
-            return false;
+            return availableProducts;
         }
 
         public async Task<bool> ParseProduct(Product product)
