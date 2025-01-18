@@ -13,7 +13,8 @@ namespace StockTracker.Parsers
             _parsers = new Dictionary<string, IParser>
         {
             { "Яндекс Маркет", new YandexMarketParser() },
-            { "Мосигра", new MosigraParser() }
+            { "Мосигра", new MosigraParser() },
+            { "Hobby Games", new HobbyGamesParser() }
         };
         }
 
@@ -23,7 +24,11 @@ namespace StockTracker.Parsers
             {
                 await Console.Out.WriteLineAsync($"\nНачали парсинг! {product.ProductName}\n");
                 if (await ParseProduct(product))
+                {
+                    await Console.Out.WriteLineAsync($"\nТОВАР ПОЯВИЛСЯ НА САЙТЕ: {product.Shop}, {product.ProductName}\n");
                     return true;
+                }
+                    
             }
             return false;
         }
