@@ -1,5 +1,7 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.CodeAnalysis;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using StockTracker.Data;
 using StockTracker.Models;
 using System.Collections.Generic;
 
@@ -8,13 +10,14 @@ namespace StockTracker.Parsers
     public class ParserService
     {
         #region Паттерн стратегия
-        //private readonly IConfiguration _configuration;
+        private readonly StockTrackerContext _context;
         private readonly ProxyService _proxyService;
         private readonly Dictionary<string, IParser> _parsers;
 
-        public ParserService(ProxyService proxyService)
+        public ParserService(ProxyService proxyService, StockTrackerContext context)
         {
             _proxyService = proxyService;
+            _context = context;
             _parsers = new Dictionary<string, IParser>
         {
             { "Яндекс Маркет", new YandexMarketParser(_proxyService) }//,
@@ -30,16 +33,14 @@ namespace StockTracker.Parsers
             foreach (var product in products)
             {
                 await Console.Out.WriteLineAsync($"\nНачали парсинг! {product.ProductName}\n");
-                if (ParseProduct(product).Result.Item1)
-                {
-                    await Console.Out.WriteLineAsync($"\nТОВАР ПОЯВИЛСЯ НА САЙТЕ: {product.Shop}, {product.ProductName}\n");
-                    availableProducts.Add(product);
-                }
+                var parserResult = ParseProduct(product).Result;
+                product.ProductCount = parserResult;
+                availableProducts.Add(product);
             }
             return availableProducts;
         }
 
-        public async Task<(bool, int)> ParseProduct(Product product)
+        public async Task<string> ParseProduct(Product product)
         {
             if (_parsers.TryGetValue(product.Shop, out var parser))
             {

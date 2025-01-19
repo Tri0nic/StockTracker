@@ -12,6 +12,9 @@ namespace StockTracker.Models
         [Required(ErrorMessage = "Введите название товара")]
         public string ProductName { get; set; }
 
+        //[Required(ErrorMessage = "Введите количество товара")]
+        public string ProductCount { get; set; }
+
         [Required(ErrorMessage = "Добавьте ссылку на товар")]
         [Url]
         public string Link { get; set; }

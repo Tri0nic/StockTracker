@@ -16,7 +16,7 @@ namespace StockTracker.Parsers
             _proxyService = proxyService;
         }
 
-        public async Task<(bool, int)> Parse(string url)
+        public async Task<string> Parse(string url)
         {
             try
             {
@@ -31,20 +31,19 @@ namespace StockTracker.Parsers
                     if (!IsAvailable(driver, "//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))
                     {
                         driver.Quit();
-                        return (false, 0);
+                        return "Нет в наличии";
                     }
                     else
                     {
                         var numberOfAvailableProducts = CountTheNumberOfAvailableProducts(driver);
                         driver.Quit();
-                        return (true, numberOfAvailableProducts);
+                        return numberOfAvailableProducts.ToString();
                     }
                 }
                 catch (Exception)
                 {
-                    var numberOfAvailableProducts = CountTheNumberOfAvailableProducts(driver);
                     driver.Quit();
-                    return (true, numberOfAvailableProducts);
+                    return "Не удалось спарсить";
                 }
 
                 #endregion
@@ -54,7 +53,7 @@ namespace StockTracker.Parsers
                 await Console.Out.WriteLineAsync($"Не удалось подключиться к сайту магазина по ссылке: {url}");
             }
 
-            return (false, 0);
+            return "Не удалось подключиться к сайту";
         }
 
         public int CountTheNumberOfAvailableProducts(IWebDriver driver)

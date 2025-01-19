@@ -69,11 +69,14 @@
 <table class="table">
     <thead>
         <tr>
-            <th style="width: 15%;">
+            <th style="width: 13%;">
                 @Html.DisplayNameFor(model => model.Shop)
             </th>
-            <th style="width: 50%;">
+            <th style="width: 40%;">
                 @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th style="width: 13%;">
+                @Html.DisplayNameFor(model => model.ProductCount)
             </th>
             <th style="width: 10%;">
                 @Html.DisplayNameFor(model => model.Link)
@@ -93,6 +96,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductCount)
                 </td>
                 <td>
                     @Html.Raw($"<a href='{item.Link}' target='_blank' rel='noopener noreferrer'>Ссылка</a>")
