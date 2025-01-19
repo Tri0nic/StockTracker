@@ -15,6 +15,7 @@ builder.Services.AddTransient<NotificationService>();
 builder.Services.AddTransient<IMessageService, EmailService>();
 builder.Services.AddTransient<IMessageService, TelegramService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<ProxyService>();
 
 builder.Services.AddControllersWithViews();
 

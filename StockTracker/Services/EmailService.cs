@@ -29,7 +29,7 @@ namespace StockTracker.Services
                     mailMessage.IsBodyHtml = true;
                     mailMessage.Body = message;
 
-                    // Добавляем всех получателей из массива
+                    // Добавляем всех адресатов из массива
                     foreach (var recipient in _emailSettings.Recipients)
                     {
                         mailMessage.To.Add(recipient);

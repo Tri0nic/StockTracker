@@ -4,7 +4,7 @@ using static StockTracker.Parsers.ParserService;
 
 namespace StockTracker.Parsers
 {
-    public class MosigraParser : IParser
+    public class MosigraParser// : IParser
     {
         public async Task<bool> Parse(string url)
         {

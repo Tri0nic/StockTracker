@@ -4,6 +4,6 @@ namespace StockTracker.Parsers
 {
     public interface IParser
     {
-        Task<bool> Parse(string url);
+        Task<(bool, int)> Parse(string url);
     }
 }

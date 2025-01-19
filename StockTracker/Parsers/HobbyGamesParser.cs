@@ -3,7 +3,7 @@ using OpenQA.Selenium;
 
 namespace StockTracker.Parsers
 {
-    public class HobbyGamesParser : IParser
+    public class HobbyGamesParser// : IParser
     {
         public async Task<bool> Parse(string url)
         {
