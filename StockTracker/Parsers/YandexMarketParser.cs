@@ -1,9 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using static StockTracker.Parsers.ParserService;
-using static StockTracker.Parsers.ProxyService;
-using static OpenQA.Selenium.BiDi.Modules.BrowsingContext.Locator;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace StockTracker.Parsers
 {
@@ -65,6 +62,7 @@ namespace StockTracker.Parsers
             }
             catch (Exception)
             {
+                //Заменить на Log
                 Console.WriteLine("Всплывающих окон не обнаружено!");
             }
             

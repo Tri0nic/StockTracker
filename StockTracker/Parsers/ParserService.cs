@@ -20,9 +20,9 @@ namespace StockTracker.Parsers
             _context = context;
             _parsers = new Dictionary<string, IParser>
         {
-            { "Яндекс Маркет", new YandexMarketParser(_proxyService) }//,
-            //{ "Мосигра", new MosigraParser() },
-            //{ "Hobby Games", new HobbyGamesParser() }
+            { "Яндекс Маркет", new YandexMarketParser(_proxyService) },
+            { "Мосигра", new MosigraParser(_proxyService) }//,
+            //{ "Hobby Games", new HobbyGamesParser(_proxyService) }
         };
         }
 
