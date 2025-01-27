@@ -35,6 +35,10 @@ namespace StockTracker.Parsers
                 await Console.Out.WriteLineAsync($"\nНачали парсинг! {product.ProductName}\n");
                 var parserResult = ParseProduct(product).Result;
                 product.ProductCount = parserResult;
+
+                //TODO: Вынести присваивание даты в отдельный метод
+                product.ParseDate = DateTime.Now;
+
                 availableProducts.Add(product);
             }
             return availableProducts;
