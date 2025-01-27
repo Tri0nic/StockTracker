@@ -45,7 +45,5 @@ namespace StockTracker.Services
                 }
             }
         }
-
-
     }
 }

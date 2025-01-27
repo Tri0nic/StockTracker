@@ -75,16 +75,19 @@
             <th style="width: 40%;">
                 @Html.DisplayNameFor(model => model.ProductName)
             </th>
-            <th style="width: 13%;">
+            <th style="width: 15%;">
                 @Html.DisplayNameFor(model => model.ProductCount)
             </th>
-            <th style="width: 10%;">
+            <th style="width: 13%;">
+                @Html.DisplayNameFor(model => model.ParseDate)
+            </th>
+            <th style="width: 5%;">
                 @Html.DisplayNameFor(model => model.Link)
             </th>
-            <th style="width: 10%;">
+            <th style="width: 5%;">
                 @Html.DisplayNameFor(model => model.IsTracked)
             </th>
-            <th style="width: 15%;"></th>
+            <th style="width: 10%;"></th>
         </tr>
     </thead>
     <tbody>
@@ -101,6 +104,9 @@
                     @Html.DisplayFor(modelItem => item.ProductCount)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.ParseDate)
+                </td>
+                <td>
                     @Html.Raw($"<a href='{item.Link}' target='_blank' rel='noopener noreferrer'>Ссылка</a>")
                 </td>
                 <td>
@@ -113,7 +119,6 @@
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>

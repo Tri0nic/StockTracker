@@ -66,7 +66,7 @@ namespace StockTracker.Parsers
                 Console.WriteLine("Всплывающих окон не обнаружено!");
             }
             
-            ClickElement(driver, "//button[@aria-label='В корзину']");
+            ClickElement(driver, "//button[@data-auto='cartButton']");
             HumanSimulation(driver);
             ClickElement(driver, "//*[@id=\"CART_ENTRY_POINT_ANCHOR\"]/a");
             HumanSimulation(driver);

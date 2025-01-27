@@ -12,8 +12,10 @@ namespace StockTracker.Models
         [Required(ErrorMessage = "Введите название товара")]
         public string ProductName { get; set; }
 
+        public DateTime? ParseDate { get; set; }
+
         //[Required(ErrorMessage = "Введите количество товара")]
-        public string ProductCount { get; set; }
+        public string? ProductCount { get; set; }
 
         [Required(ErrorMessage = "Добавьте ссылку на товар")]
         [Url]

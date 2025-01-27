@@ -66,14 +66,17 @@ namespace StockTracker.Parsers
             var element = driver.FindElement(By.XPath("//button[@class='btn btn-block btn-cart btn-cart--full-fill buy__button to-cart']"));
             IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
             js.ExecuteScript("arguments[0].click();", element);
+            Thread.Sleep(new Random().Next(2000, 2501));
 
             var element1 = driver.FindElement(By.XPath("//button[@class='btn btn-block btn-cart btn-cart--full-fill buy__button icon-in-cart']"));
             IJavaScriptExecutor js1 = (IJavaScriptExecutor)driver;
             js1.ExecuteScript("arguments[0].click();", element1);
+            Thread.Sleep(new Random().Next(2000, 2501));
 
             var element2 = driver.FindElement(By.XPath("//a[@class='btn btn-change-step btn-red btn-order']"));
             IJavaScriptExecutor js2 = (IJavaScriptExecutor)driver;
             js2.ExecuteScript("arguments[0].click();", element2);
+            Thread.Sleep(new Random().Next(2000, 2501));
 
             var count = 0;
             // Надо увеличить время между кликами!!!!!!!!!!!!!!!!!!!!!!!!
@@ -83,6 +86,7 @@ namespace StockTracker.Parsers
                 var element3 = driver.FindElement(By.XPath("//input[@class='visually-hidden']"));
                 IJavaScriptExecutor js3 = (IJavaScriptExecutor)driver;
                 js3.ExecuteScript("arguments[0].click();", element3);
+                Thread.Sleep(new Random().Next(3000, 4001));
 
                 HumanSimulation(driver);
 
@@ -112,6 +116,7 @@ namespace StockTracker.Parsers
                 var element4 = driver.FindElement(By.XPath("//a[@data-action='plus']"));
                 IJavaScriptExecutor js4 = (IJavaScriptExecutor)driver;
                 js4.ExecuteScript("arguments[0].click();", element4);
+                Thread.Sleep(new Random().Next(3000, 4001));
             }
         }
     }
