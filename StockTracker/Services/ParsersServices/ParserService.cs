@@ -8,7 +8,6 @@ namespace StockTracker.Services.ParsersServices
 
         public ParserService(IEnumerable<IParser> parsers)
         {
-            
             _parsers = parsers.ToDictionary(parsers => parsers.ShopName);
         }
 
@@ -19,8 +18,8 @@ namespace StockTracker.Services.ParsersServices
             foreach (var product in products)
             {
                 await Console.Out.WriteLineAsync($"\nНачали парсинг! {product.ProductName}\n");
-                var parserResult = ParseProduct(product).Result;
 
+                var parserResult = ParseProduct(product).Result;
                 UpdateProductDetails(product, parserResult);
 
                 availableProducts.Add(product);

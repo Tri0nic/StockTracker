@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.CodeAnalysis;
+using OpenQA.Selenium;
 using StockTracker.Services.ParsersServices;
 using static StockTracker.Services.ParsersServices.JavaScriptService;
 using static StockTracker.Services.ParsersServices.SeleniumService;
@@ -71,25 +72,31 @@ namespace StockTracker.Parsers
 
                 var numberOfShops = elements.Count();
                 
-                foreach (var shop in elements) // Считаем количество элементов
+                foreach (var shop in elements)
                 {
-                    try
+                    if (CountAvailableShops(shop, numberOfShops, ref count) == 0)
                     {
-                        shop.FindElement(By.XPath(".//div[text()='Отсюда можно забрать только часть заказа']"));
-                        numberOfShops--;
-                        if (numberOfShops == 0)
-                        {
-                            return count;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        count++;
+                        return count;
                     }
                 }
 
                 JSClickElement(driver, "//a[@data-action='plus']"); // Увеличиваем число в корзине
             }
+        }
+
+        private int CountAvailableShops(IWebElement shop, int numberOfShops, ref int count) 
+        {
+            try
+            {
+                shop.FindElement(By.XPath(".//div[text()='Отсюда можно забрать только часть заказа']"));
+                numberOfShops--;
+            }
+            catch (Exception)
+            {
+                count++;
+            }
+
+            return numberOfShops;
         }
     }
 }
