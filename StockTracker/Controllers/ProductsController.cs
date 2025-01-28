@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using FluentScheduler;
-using Hangfire;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockTracker.Data;
-using StockTracker.Migrations;
 using StockTracker.Models;
-using StockTracker.Parsers;
-using StockTracker.Services;
+using StockTracker.Services.NotifiersServices;
+using StockTracker.Services.ParsersServices;
 
 namespace StockTracker.Controllers
 {
@@ -207,7 +198,7 @@ namespace StockTracker.Controllers
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: {ex.Message}");
+                        Console.WriteLine($"Ошибка Ошибка !!!: {ex.Message}");
                     }
                     finally
                     {

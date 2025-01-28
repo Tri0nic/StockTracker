@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using StockTracker.Configurations;
 using StockTracker.Data;
+using StockTracker.Notifiers;
 using StockTracker.Parsers;
-using StockTracker.Services;
+using StockTracker.Services.NotifiersServices;
+using StockTracker.Services.ParsersServices;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<StockTrackerContext>(options =>
@@ -12,10 +13,15 @@ builder.Services.AddDbContext<StockTrackerContext>(options =>
 // Add services to the container.
 builder.Services.AddTransient<ParserService>();
 builder.Services.AddTransient<NotificationService>();
-builder.Services.AddTransient<IMessageService, EmailService>();
-builder.Services.AddTransient<IMessageService, TelegramService>();
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IMessageService, EmailNotifier>();
+builder.Services.AddTransient<IMessageService, TelegramNotifier>();
 builder.Services.AddTransient<ProxyService>();
+
+builder.Services.AddTransient<IParser, MosigraParser>();
+builder.Services.AddTransient<IParser, YandexMarketParser>();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 
 builder.Services.AddControllersWithViews();
 

@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace StockTracker.Parsers
+namespace StockTracker.Services.ParsersServices
 {
     public class ProxyService
     {

@@ -2,14 +2,15 @@
 using System.Net;
 using StockTracker.Configurations;
 using Microsoft.Extensions.Options;
+using StockTracker.Services.NotifiersServices;
 
-namespace StockTracker.Services
+namespace StockTracker.Notifiers
 {
-    public class EmailService : IMessageService
+    public class EmailNotifier : IMessageService
     {
         private readonly EmailSettings _emailSettings;
 
-        public EmailService(IOptions<EmailSettings> emailSettings)
+        public EmailNotifier(IOptions<EmailSettings> emailSettings)
         {
             _emailSettings = emailSettings.Value;
         }

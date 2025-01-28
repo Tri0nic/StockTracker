@@ -1,11 +1,14 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using static StockTracker.Parsers.ParserService;
+using StockTracker.Services.ParsersServices;
+using static StockTracker.Services.ParsersServices.JavaScriptService;
+using static StockTracker.Services.ParsersServices.SeleniumService;
 
 namespace StockTracker.Parsers
 {
     public class MosigraParser : IParser
     {
+        public string ShopName => "Мосигра";
+
         private readonly ProxyService _proxyService;
 
         public MosigraParser(ProxyService proxyService)
@@ -15,88 +18,60 @@ namespace StockTracker.Parsers
 
         public async Task<string> Parse(string url)
         {
-            try
+            using (var driver = CreateWebDriver(_proxyService, url))
             {
-                #region Selenium
-
-                var chromeOptions = _proxyService.GetRandomProxy();
-                var driver = new ChromeDriver(chromeOptions);
-                driver.Url = url;
-
                 try
                 {
-                    // открываем список городов
-                    ClickElement(driver, "//*[@id=\"app-main\"]/header/div[2]/div/div/div[1]/button");
+                    ChooseRegion(driver);
 
-                    // выбираем Москву
-                    ClickElement(driver, "//*[@id=\"app-main\"]/header/div[1]/div/ul/li[1]/span/a");
-
-                    if (!IsAvailable(driver, "//*[@id=\"app-main\"]/main/section[1]/article/section[1]/noindex/div/span[2]/b"))
+                    if (!IsElementAvailable(driver, "//*[@id=\"app-main\"]/main/section[1]/article/section[1]/noindex/div/span[2]/b"))
                     {
-                        driver.Quit();
+                        Console.WriteLine("Нет в наличии");
                         return "Нет в наличии";
                     }
                     else
                     {
-                        var numberOfAvailableProducts = CountTheNumberOfAvailableProducts(driver);
-                        driver.Quit();
-                        return numberOfAvailableProducts.ToString();
+                        return CountProducts(driver).ToString();
                     }
                 }
                 catch (Exception)
                 {
-                    driver.Quit();
+                    Console.WriteLine("Не удалось спарсить");
                     return "Не удалось спарсить";
                 }
-
-                #endregion
             }
-            catch
-            {
-                await Console.Out.WriteLineAsync($"Не удалось подключиться к сайту магазина по ссылке: {url}");
-            }
-
-            return "Не удалось подключиться к сайту";
         }
 
-        public int CountTheNumberOfAvailableProducts(IWebDriver driver)
+        private void ChooseRegion(IWebDriver driver)
         {
-            HumanSimulation(driver);
+            ClickElement(driver, "//*[@id=\"app-main\"]/header/div[2]/div/div/div[1]/button"); // открываем список городов
+            ClickElement(driver, "//*[@id=\"app-main\"]/header/div[1]/div/ul/li[1]/span/a"); // выбираем Москву
+        }
 
-            var element = driver.FindElement(By.XPath("//button[@class='btn btn-block btn-cart btn-cart--full-fill buy__button to-cart']"));
-            IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-            js.ExecuteScript("arguments[0].click();", element);
-            Thread.Sleep(new Random().Next(2000, 2501));
+        public int CountProducts(IWebDriver driver)
+        {
+            JSHumanSimulation(driver);
 
-            var element1 = driver.FindElement(By.XPath("//button[@class='btn btn-block btn-cart btn-cart--full-fill buy__button icon-in-cart']"));
-            IJavaScriptExecutor js1 = (IJavaScriptExecutor)driver;
-            js1.ExecuteScript("arguments[0].click();", element1);
-            Thread.Sleep(new Random().Next(2000, 2501));
+            JSClickElement(driver, "//button[@class='btn btn-block btn-cart btn-cart--full-fill buy__button to-cart']"); // Добавление в корзину
+            JSClickElement(driver, "//button[@class='btn btn-block btn-cart btn-cart--full-fill buy__button icon-in-cart']"); // Переход в корзину
+            JSClickElement(driver, "//a[@class='btn btn-change-step btn-red btn-order']"); // Перейти к оформлению
 
-            var element2 = driver.FindElement(By.XPath("//a[@class='btn btn-change-step btn-red btn-order']"));
-            IJavaScriptExecutor js2 = (IJavaScriptExecutor)driver;
-            js2.ExecuteScript("arguments[0].click();", element2);
-            Thread.Sleep(new Random().Next(2000, 2501));
+            return IterativeProductCount(driver);
+        }
 
+        private int IterativeProductCount(IWebDriver driver)
+        {
             var count = 0;
-            // Надо увеличить время между кликами!!!!!!!!!!!!!!!!!!!!!!!!
             while (true)
             {
-                //Нажимаем на кнопку самовывоза
-                var element3 = driver.FindElement(By.XPath("//input[@class='visually-hidden']"));
-                IJavaScriptExecutor js3 = (IJavaScriptExecutor)driver;
-                js3.ExecuteScript("arguments[0].click();", element3);
-                Thread.Sleep(new Random().Next(3000, 4001));
+                JSClickElement(driver, "//input[@class='visually-hidden']"); //Нажимаем на кнопку самовывоза
+                JSHumanSimulation(driver);
 
-                HumanSimulation(driver);
-
-                // Получаем список магазинов
-                var elements = driver.FindElements(By.XPath("//div[@class='row delivery__methods__item  ']"));
+                var elements = driver.FindElements(By.XPath("//div[@class='row delivery__methods__item  ']")); // Получаем список магазинов
 
                 var numberOfShops = elements.Count();
-
-                // Подсчитать количество элементов
-                foreach (var shop in elements)
+                
+                foreach (var shop in elements) // Считаем количество элементов
                 {
                     try
                     {
@@ -113,10 +88,7 @@ namespace StockTracker.Parsers
                     }
                 }
 
-                var element4 = driver.FindElement(By.XPath("//a[@data-action='plus']"));
-                IJavaScriptExecutor js4 = (IJavaScriptExecutor)driver;
-                js4.ExecuteScript("arguments[0].click();", element4);
-                Thread.Sleep(new Random().Next(3000, 4001));
+                JSClickElement(driver, "//a[@data-action='plus']"); // Увеличиваем число в корзине
             }
         }
     }

@@ -1,6 +1,8 @@
-﻿namespace StockTracker.Services
+﻿using StockTracker.Services.NotifiersServices;
+
+namespace StockTracker.Notifiers
 {
-    public class TelegramService : IMessageService
+    public class TelegramNotifier : IMessageService
     {
         public void SendMessage(string message)
         {

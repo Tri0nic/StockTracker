@@ -1,4 +1,4 @@
-﻿namespace StockTracker.Services
+﻿namespace StockTracker.Services.NotifiersServices
 {
     public interface IMessageService
     {

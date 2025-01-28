@@ -1,11 +1,14 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using static StockTracker.Parsers.ParserService;
+using StockTracker.Services.ParsersServices;
+using static StockTracker.Services.ParsersServices.JavaScriptService;
+using static StockTracker.Services.ParsersServices.SeleniumService;
 
 namespace StockTracker.Parsers
 {
     public class YandexMarketParser : IParser
     {
+        public string ShopName => "Яндекс Маркет";
+
         private readonly ProxyService _proxyService;
 
         public YandexMarketParser(ProxyService proxyService)
@@ -19,20 +22,18 @@ namespace StockTracker.Parsers
             {
                 #region Selenium
 
-                var chromeOptions = _proxyService.GetRandomProxy();
-                var driver = new ChromeDriver(chromeOptions);
-                driver.Url = url;
+                var driver = CreateWebDriver(_proxyService, url);
 
                 try
                 {
-                    if (!IsAvailable(driver, "//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))
+                    if (!IsElementAvailable(driver, "//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))
                     {
                         driver.Quit();
                         return "Нет в наличии";
                     }
                     else
                     {
-                        var numberOfAvailableProducts = CountTheNumberOfAvailableProducts(driver);
+                        var numberOfAvailableProducts = CountProducts(driver);
                         driver.Quit();
                         return numberOfAvailableProducts.ToString();
                     }
@@ -53,7 +54,7 @@ namespace StockTracker.Parsers
             return "Не удалось подключиться к сайту";
         }
 
-        public int CountTheNumberOfAvailableProducts(IWebDriver driver)
+        public int CountProducts(IWebDriver driver)
         {
             try
             {
@@ -67,9 +68,9 @@ namespace StockTracker.Parsers
             }
             
             ClickElement(driver, "//button[@data-auto='cartButton']");
-            HumanSimulation(driver);
+            JSHumanSimulation(driver);
             ClickElement(driver, "//*[@id=\"CART_ENTRY_POINT_ANCHOR\"]/a");
-            HumanSimulation(driver);
+            JSHumanSimulation(driver);
             EnterText(driver, "//*[@id=\"/content/page/fancyPage/@chef\\/cart\\/CartLayout/@chef\\/cart\\/ChefCartList/@light\\/SlotsTheCreator/MARKET/@chef\\/cart\\/CartLazyWrapper/lazy/initialContent/slots/MARKET_0/list/0_MARKET/addToCartButton\"]/div/div/span/input", "10000");
             ClickElement(driver, "//button[@aria-label='Увеличить']");
 

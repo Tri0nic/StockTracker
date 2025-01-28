@@ -1,9 +1,10 @@
 ﻿using StockTracker.Models;
+using StockTracker.Notifiers;
 
 //TODO: переделать под одну отправку всех писем, а не по одному; Создать список/словарь
 //TODO: refactor - прокинуть isEmailEnabled и isTelegramEnabled через DI?
 
-namespace StockTracker.Services
+namespace StockTracker.Services.NotifiersServices
 {
     public class NotificationService
     {
@@ -34,12 +35,12 @@ namespace StockTracker.Services
 
             foreach (var service in _messageServices)
             {
-                if (service is EmailService && isEmailEnabled)
+                if (service is EmailNotifier && isEmailEnabled)
                 {
                     service.SendMessage($"{letter}");
                 }
 
-                if (service is TelegramService && isTelegramEnabled)
+                if (service is TelegramNotifier && isTelegramEnabled)
                 {
                     //service.SendMessage($"The following products are being tracked:\n\n{letter}");
                 }
