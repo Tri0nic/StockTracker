@@ -9,9 +9,13 @@ namespace StockTracker.Notifiers
     {
         private readonly EmailSettings _emailSettings;
 
+        public string ServiceName => "Email";
+        public bool IsEnabled { get; set; }
+
         public EmailNotifier(IOptions<EmailSettings> emailSettings)
         {
             _emailSettings = emailSettings.Value;
+            IsEnabled = false;
         }
 
         public void SendMessage(string message)

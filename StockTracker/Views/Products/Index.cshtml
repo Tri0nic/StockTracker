@@ -9,18 +9,17 @@
 <!-- Настройки отправки уведомлений -->
 <div>
     <form asp-action="SendNotifications" method="post">
-        <div>
-            <label>
-                <input type="checkbox" name="isEmailEnabled" value="true" @(ViewBag.IsEmailEnabled ?? false ? "checked" : "") />
-                Enable Email Notifications
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="checkbox" name="isTelegramEnabled" value="true" @(ViewBag.IsTelegramEnabled ?? false ? "checked" : "") />
-                Enable Telegram Notifications
-            </label>
-        </div>
+        @if (ViewBag.Services != null)
+        {
+            @foreach (var service in ViewBag.Services)
+            {
+                <label>
+                    <input type="checkbox" name="servicePreferences[@service.ServiceName]" value="true" @(service.IsEnabled ? "checked" : "") />
+                    Enable @service.ServiceName Notifications
+                </label>
+                <br />
+            }
+        }
         <div>
             <label>
                 Frequency (minutes):

@@ -25,9 +25,8 @@ namespace StockTracker.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-              return _context.Product != null ? 
-                          View(await _context.Product.ToListAsync()) :
-                          Problem("Entity set 'StockTrackerContext.Product'  is null.");
+            ViewBag.Services = _notificationService.GetAllServices();
+            return View(await _context.Product.ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -177,9 +176,13 @@ namespace StockTracker.Controllers
 
         [HttpPost]
         //TODO: Изменить название?
-        //TODO: Передавать коллекцию сервисов вместо явных isEmailEnabled isTelegramEnabled IEnumerable<IMessageService> notificationServices
-        public async Task<IActionResult> SendNotifications(bool isEmailEnabled, bool isTelegramEnabled, int frequencyInMinutes)
+        public async Task<IActionResult> SendNotifications(Dictionary<string, bool> servicePreferences, int frequencyInMinutes)
         {
+            foreach (var entry in servicePreferences)
+            {
+                _notificationService.SetServiceStatus(entry.Key, entry.Value);
+            }
+
             var products = await _context.Product.Where(p => p.IsTracked).ToListAsync();
             while (true)
             {
@@ -194,7 +197,7 @@ namespace StockTracker.Controllers
                     try
                     {
                         _isRunning = true;
-                        await ParseAndNotify(products, isEmailEnabled, isTelegramEnabled);
+                        await ParseAndNotify(products);
                     }
                     catch (Exception ex)
                     {
@@ -218,7 +221,7 @@ namespace StockTracker.Controllers
             }
         }
 
-        public async Task ParseAndNotify(IEnumerable<Product> products, bool isEmailEnabled, bool isTelegramEnabled)
+        private async Task ParseAndNotify(IEnumerable<Product> products)
         {
             var allProducts = await _parserService.ParseProducts(products);
 
@@ -229,16 +232,11 @@ namespace StockTracker.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            var hasProducts = allProducts.Any(p =>
-                int.TryParse(p.ProductCount, out int count));
+            var availableProducts = allProducts.Where(p => int.TryParse(p.ProductCount, out _)).ToList();
 
-            var availableProducts = allProducts
-                .Where(p => int.TryParse(p.ProductCount, out int count))
-                .ToList();
-
-            if (hasProducts)
+            if (availableProducts.Any())
             {
-                _notificationService.Notify(availableProducts, isEmailEnabled, isTelegramEnabled);
+                _notificationService.Notify(availableProducts);
             }
         }
 
