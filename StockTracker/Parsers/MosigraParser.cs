@@ -15,6 +15,7 @@ namespace StockTracker.Parsers
         public MosigraParser(ProxyService proxyService)
         {
             _proxyService = proxyService;
+        
         }
 
         public async Task<string> Parse(string url)
@@ -74,7 +75,7 @@ namespace StockTracker.Parsers
                 
                 foreach (var shop in elements)
                 {
-                    if (CountAvailableShops(shop, numberOfShops, ref count) == 0)
+                    if (CountAvailableShops(shop, ref numberOfShops, ref count) == 0)
                     {
                         return count;
                     }
@@ -84,7 +85,7 @@ namespace StockTracker.Parsers
             }
         }
 
-        private int CountAvailableShops(IWebElement shop, int numberOfShops, ref int count) 
+        private int CountAvailableShops(IWebElement shop, ref int numberOfShops, ref int count) 
         {
             try
             {
