@@ -1,37 +1,50 @@
 ﻿using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
+using StockTracker.Services.ParsersServices;
+using static StockTracker.Services.ParsersServices.JavaScriptService;
+using static StockTracker.Services.ParsersServices.SeleniumService;
 
 namespace StockTracker.Parsers
 {
-    public class HobbyGamesParser// : IParser
+    public class HobbyGamesParser : IParser
     {
-        public async Task<bool> Parse(string url)
+        public string ShopName => "Hobby Games";
+
+        private readonly ProxyService _proxyService;
+
+        public HobbyGamesParser(ProxyService proxyService)
         {
-            try
+            _proxyService = proxyService;
+
+        }
+
+        public async Task<string> Parse(string url)
+        {
+            using (var driver = CreateWebDriver(_proxyService, url))
             {
-                #region Selenium
-
-                IWebDriver driver = new ChromeDriver();
-                driver.Url = url;
-
                 try
                 {
-                    string IsAvailable = (driver.FindElement(By.XPath("/html/body/div[2]/div/aside/div[1]/div[1]/div/div[3]/button[1]/span"))).Text;
-                    return false;
+                    if (!IsElementAvailable(driver, "//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))
+                    {
+                        Console.WriteLine("Нет в наличии");
+                        return "Нет в наличии";
+                    }
+                    else
+                    {
+                        return CountProducts(driver).ToString();
+                    }
                 }
                 catch (Exception)
                 {
-                    return true;
+                    Console.WriteLine("Не удалось спарсить");
+                    return "Не удалось спарсить";
                 }
-
-                #endregion
             }
-            catch
-            {
-                await Console.Out.WriteLineAsync($"Не удалось подключиться к сайту магазина по ссылке: {url}");
-            }
+        }
 
-            return false;
+        private string CountProducts(IWebDriver driver)
+        {
+            return "0";
         }
     }
 }
