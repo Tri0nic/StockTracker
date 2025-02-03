@@ -1,7 +1,5 @@
-﻿using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium;
-using StockTracker.Services.ParsersServices;
-using static StockTracker.Services.ParsersServices.JavaScriptService;
+﻿using StockTracker.Services.ParsersServices;
+using static StockTracker.Parsers.Helpers.HobbyGamesHelper;
 using static StockTracker.Services.ParsersServices.SeleniumService;
 
 namespace StockTracker.Parsers
@@ -24,7 +22,7 @@ namespace StockTracker.Parsers
             {
                 try
                 {
-                    if (!IsElementAvailable(driver, "//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))
+                    if (IsElementAvailable(driver, "//a[@id='ui-id-5']"))
                     {
                         Console.WriteLine("Нет в наличии");
                         return "Нет в наличии";
@@ -40,11 +38,6 @@ namespace StockTracker.Parsers
                     return "Не удалось спарсить";
                 }
             }
-        }
-
-        private string CountProducts(IWebDriver driver)
-        {
-            return "0";
         }
     }
 }

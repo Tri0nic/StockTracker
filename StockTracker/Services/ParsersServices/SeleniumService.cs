@@ -13,6 +13,9 @@ namespace StockTracker.Services.ParsersServices
             try
             {
                 var chromeOptions = proxyService.GetRandomProxy();
+
+                BlockNotifications(chromeOptions);
+
                 var driver = new ChromeDriver(chromeOptions);
                 driver.Url = url;
                 return driver;
@@ -71,5 +74,11 @@ namespace StockTracker.Services.ParsersServices
         }
 
         #endregion
+
+        private static void BlockNotifications(ChromeOptions chromeOptions)
+        {
+            chromeOptions.AddArgument("--disable-notifications");
+            chromeOptions.AddUserProfilePreference("profile.default_content_setting_values.notifications", 2);
+        }
     }
 }

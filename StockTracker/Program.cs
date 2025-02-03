@@ -19,6 +19,7 @@ builder.Services.AddTransient<ProxyService>();
 
 builder.Services.AddTransient<IParser, MosigraParser>();
 builder.Services.AddTransient<IParser, YandexMarketParser>();
+builder.Services.AddTransient<IParser, HobbyGamesParser>();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
