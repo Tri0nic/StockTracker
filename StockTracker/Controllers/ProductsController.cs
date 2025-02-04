@@ -26,7 +26,12 @@ namespace StockTracker.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.Services = _notificationService.GetAllServices();
-            return View(await _context.Product.ToListAsync());
+            var uniqueProducts = await _context.Product
+                .GroupBy(p => new { p.Shop, p.ProductName })
+                .Select(g => g.OrderByDescending(p => p.ParseDate).First())
+                .ToListAsync();
+
+            return View(uniqueProducts);
         }
 
         // GET: Products/Details/5
@@ -228,7 +233,7 @@ namespace StockTracker.Controllers
             // Вынести в отдельный метод
             foreach (var product in allProducts)
             {
-                _context.Update(product);
+                _context.Add(product); // Здесь раньше был Update
                 await _context.SaveChangesAsync();
             }
 
@@ -246,11 +251,11 @@ namespace StockTracker.Controllers
         }
 
         // GET: Products/Statistics
-        public async Task<IActionResult> Statistics(string ProductName)
+        public async Task<IActionResult> Statistics(string ProductName, string Shop)
         {
             //return View(await _context.Product.Where(product => product.ProductName == ProductName).ToListAsync());
             var products = await _context.Product
-                .Where(product => product.ProductName == ProductName)
+                .Where(product => product.ProductName == ProductName && product.Shop == Shop)
                 .OrderBy(product => product.ParseDate) // Упорядочиваем даты
                 .ToListAsync();
 

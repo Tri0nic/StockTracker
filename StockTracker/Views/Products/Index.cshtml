@@ -97,7 +97,8 @@
                     @Html.Raw($"<a href='{item.Link}' target='_blank' rel='noopener noreferrer'>{item.ProductName}</a>")
                 </td>
                 <td>
-                    <a asp-action="Statistics" asp-route-ProductName="@item.ProductName">@Html.DisplayFor(modelItem => item.ProductCount)</a> 
+                    @* Здесь надо будет сделать цикл суммирующий все товары с одинаковым ProductName *@
+                    <a asp-action="Statistics" asp-route-ProductName="@item.ProductName" asp-route-Shop="@item.Shop">@Html.DisplayFor(modelItem => item.ProductCount)</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ParseDate)
