@@ -1,0 +1,83 @@
+﻿@model IEnumerable<StockTracker.Models.Product>
+
+@{
+    ViewData["Title"] = "Statistics";
+}
+
+<h1>Statistics</h1>
+
+@if (Model?.Any() == true)
+{
+    <h4>@Model.First().Shop</h4>
+    <h4>@Model.First().ProductName</h4>
+}
+else
+{
+    <h4>No data available</h4>
+}
+
+<!-- Таблица с товаром по дате -->
+<div style="display: flex;">
+    <!-- Таблица слева -->
+    <div style="width: 35%;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">@Html.DisplayNameFor(model => model.ProductCount)</th>
+                    <th style="width: 13%;">@Html.DisplayNameFor(model => model.ParseDate)</th>
+                    <th style="width: 10%;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.ProductCount)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ParseDate)</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- График справа -->
+    <div style="width: 60%; padding-left: 5%; height: 500px;">
+        <canvas id="productChart"></canvas>
+    </div>
+</div>
+
+<!-- График -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('productChart').getContext('2d');
+
+        var chartData = {
+            labels: @Html.Raw(Json.Serialize(ViewBag.ChartLabels)), // Метки оси X (даты)
+            datasets: [{
+                label: 'Product Count',
+                data: @Html.Raw(Json.Serialize(ViewBag.ChartData)), // Значения оси Y
+                borderColor: 'blue',
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                borderWidth: 2
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'line', // Линейный график
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Date' } },
+                    y: { title: { display: true, text: 'Product Count' }, beginAtZero: true }
+                }
+            }
+        });
+    });
+</script>

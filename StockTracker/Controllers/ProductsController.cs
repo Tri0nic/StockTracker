@@ -225,7 +225,7 @@ namespace StockTracker.Controllers
         {
             var allProducts = await _parserService.ParseProducts(products);
 
-            //Вынести в отдельный метод
+            // Вынести в отдельный метод
             foreach (var product in allProducts)
             {
                 _context.Update(product);
@@ -244,5 +244,30 @@ namespace StockTracker.Controllers
         {
           return (_context.Product?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        // GET: Products/Statistics
+        public async Task<IActionResult> Statistics(string ProductName)
+        {
+            //return View(await _context.Product.Where(product => product.ProductName == ProductName).ToListAsync());
+            var products = await _context.Product
+                .Where(product => product.ProductName == ProductName)
+                .OrderBy(product => product.ParseDate) // Упорядочиваем даты
+                .ToListAsync();
+
+            // Подготовка данных для графика
+            ViewBag.ChartLabels = products.Select(p => p.ParseDate).ToList();
+            ViewBag.ChartData = products.Select(p => p.ProductCount).ToList();
+
+            return View(products);
+        }
+
+        // POST: Products/Statistics
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Statistics(Product product) //[Bind("Id,Shop,ProductName,ProductCount,ParseDate,Link,IsTracked")] 
+        //{
+        //    ViewBag.Services = _notificationService.GetAllServices();
+        //    return View(await _context.Product.ToListAsync());
+        //}
     }
 }
