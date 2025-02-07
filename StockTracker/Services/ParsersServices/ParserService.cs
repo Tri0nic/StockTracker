@@ -37,6 +37,7 @@ namespace StockTracker.Services.ParsersServices
 
         private void UpdateProductDetails(Product product, string parserResult)
         {
+            product.Id = 0;
             product.ProductCount = parserResult;
             product.ParseDate = DateTime.Now;
         }

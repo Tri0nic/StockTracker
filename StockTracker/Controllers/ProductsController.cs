@@ -233,10 +233,20 @@ namespace StockTracker.Controllers
             // Вынести в отдельный метод
             foreach (var product in allProducts)
             {
-                product.Id = 0;
-                _context.Add(product); // Здесь раньше был Update
+                _context.Add(product);
+
                 await _context.SaveChangesAsync();
+
+                // снимаем ISTrucked у устаревших данных
+                var outdatedProducts = await _context.Product
+                    .Where(p => p.Shop == product.Shop && p.ProductName == product.ProductName && p.ParseDate < product.ParseDate)
+                    .ToListAsync();
+
+                foreach (var outdatedProduct in outdatedProducts)
+                    outdatedProduct.IsTracked = false;
             }
+
+            await _context.SaveChangesAsync();
 
             var availableProducts = allProducts.Where(p => int.TryParse(p.ProductCount, out _)).ToList();
 
@@ -261,7 +271,9 @@ namespace StockTracker.Controllers
                 .ToListAsync();
 
             // Подготовка данных для графика
-            ViewBag.ChartLabels = products.Select(p => p.ParseDate).ToList();
+            ViewBag.ChartLabels = products
+                .Select(p => p.ParseDate.HasValue ? p.ParseDate.Value.ToString("yyyy-MM-dd HH:mm") : "")
+                .ToList();
             ViewBag.ChartData = products.Select(p => p.ProductCount).ToList();
 
             return View(products);
