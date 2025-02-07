@@ -233,6 +233,7 @@ namespace StockTracker.Controllers
             // Вынести в отдельный метод
             foreach (var product in allProducts)
             {
+                product.Id = 0;
                 _context.Add(product); // Здесь раньше был Update
                 await _context.SaveChangesAsync();
             }
