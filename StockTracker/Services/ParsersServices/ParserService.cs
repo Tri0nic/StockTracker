@@ -20,9 +20,10 @@ namespace StockTracker.Services.ParsersServices
                 await Console.Out.WriteLineAsync($"\nНачали парсинг! {product.ProductName}\n");
 
                 var parserResult = ParseProduct(product).Result;
-                UpdateProductDetails(product, parserResult);
 
-                availableProducts.Add(product);
+                product.IsTracked = false;
+
+                availableProducts.Add(CreateParsedProduct(product, parserResult));
             }
             return availableProducts;
         }
@@ -35,11 +36,20 @@ namespace StockTracker.Services.ParsersServices
                 throw new NotImplementedException($"Парсинг для магазина {product.Shop} не реализован.");
         }
 
-        private void UpdateProductDetails(Product product, string parserResult)
+        private Product CreateParsedProduct(Product product, string parserResult)
         {
-            product.Id = 0;
-            product.ProductCount = parserResult;
-            product.ParseDate = DateTime.Now;
+            var newProduct = new Product 
+            { 
+            Id = 0,
+            Shop = product.Shop,
+            ProductName = product.ProductName,
+            ParseDate = DateTime.Now,
+            ProductCount = parserResult,
+            Link = product.Link,
+            IsTracked = true
+            };
+
+            return newProduct;
         }
     }
 }

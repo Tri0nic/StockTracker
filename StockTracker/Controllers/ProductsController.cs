@@ -234,16 +234,6 @@ namespace StockTracker.Controllers
             foreach (var product in allProducts)
             {
                 _context.Add(product);
-
-                await _context.SaveChangesAsync();
-
-                // снимаем ISTrucked у устаревших данных
-                var outdatedProducts = await _context.Product
-                    .Where(p => p.Shop == product.Shop && p.ProductName == product.ProductName && p.ParseDate < product.ParseDate)
-                    .ToListAsync();
-
-                foreach (var outdatedProduct in outdatedProducts)
-                    outdatedProduct.IsTracked = false;
             }
 
             await _context.SaveChangesAsync();
@@ -264,10 +254,9 @@ namespace StockTracker.Controllers
         // GET: Products/Statistics
         public async Task<IActionResult> Statistics(string ProductName, string Shop)
         {
-            //return View(await _context.Product.Where(product => product.ProductName == ProductName).ToListAsync());
             var products = await _context.Product
                 .Where(product => product.ProductName == ProductName && product.Shop == Shop)
-                .OrderBy(product => product.ParseDate) // Упорядочиваем даты
+                .OrderBy(product => product.ParseDate)
                 .ToListAsync();
 
             // Подготовка данных для графика
@@ -278,14 +267,5 @@ namespace StockTracker.Controllers
 
             return View(products);
         }
-
-        // POST: Products/Statistics
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Statistics(Product product) //[Bind("Id,Shop,ProductName,ProductCount,ParseDate,Link,IsTracked")] 
-        //{
-        //    ViewBag.Services = _notificationService.GetAllServices();
-        //    return View(await _context.Product.ToListAsync());
-        //}
     }
 }
