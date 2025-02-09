@@ -8,7 +8,7 @@ namespace StockTracker.Parsers.Helpers
     {
         public static string CountProducts(IWebDriver driver)
         {
-            ClickElement(driver, "//a[@id='ui-id-5']");
+            OpenShopsMenue(driver);
             return CountAvailableShops(driver).ToString();
         }
 
@@ -23,11 +23,22 @@ namespace StockTracker.Parsers.Helpers
 
                 foreach (var shop in elements)
                 {
-                    count += int.Parse((shop.Text).Split(' ')[0]);
+                    if (!shop.Text.Contains('-'))
+                    {
+                        count += int.Parse((shop.Text).Split(' ')[0]);
+                    }
                 }
 
                 return count;
             }
+        }
+
+        private static void OpenShopsMenue(IWebDriver driver)
+        {
+            var optionsBar = driver.FindElements(By.XPath("//li[@class='flat-tab-nav__item ui-tabs-tab ui-corner-top ui-state-default ui-tab']"));
+            var availability = optionsBar.Count() + 1;
+
+            ClickElement(driver, $"//a[@id='ui-id-{availability}']");
         }
     }
 }

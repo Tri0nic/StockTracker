@@ -67,6 +67,9 @@ namespace StockTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+                product.ProductCount = "Не удалось спарсить";
+                product.ParseDate = DateTime.Now;
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -150,7 +153,7 @@ namespace StockTracker.Controllers
         {
             if (_context.Product == null)
             {
-                return Problem("Entity set 'StockTrackerContext.Product'  is null.");
+                return Problem("Entity set 'StockTrackerContext.Product' is null.");
             }
             var product = await _context.Product.FindAsync(id);
             if (product != null)
@@ -161,6 +164,27 @@ namespace StockTracker.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStatistics(int id, string ProductName, string Shop)
+        {
+            if (_context.Product == null)
+            {
+                return Problem("Entity set 'StockTrackerContext.Product' is null.");
+            }
+
+            var product = await _context.Product.FindAsync(id);
+            if (product != null)
+            {
+                _context.Product.Remove(product);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Statistics), new { ProductName, Shop });
+        }
+
 
         // POST
         [HttpPost]

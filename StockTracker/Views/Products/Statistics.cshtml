@@ -19,7 +19,7 @@ else
 <!-- Таблица с товаром по дате -->
 <div style="display: flex;">
     <!-- Таблица слева -->
-    <div style="width: 35%;">
+    <div style="width: 37%;">
         <table class="table">
             <thead>
                 <tr>
@@ -36,7 +36,15 @@ else
                             <td>@Html.DisplayFor(modelItem => item.ParseDate)</td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                <form asp-action="DeleteStatistics" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <input type="hidden" name="ProductName" value="@Model.First().ProductName" />
+                                    <input type="hidden" name="Shop" value="@Model.First().Shop" />
+                                    <button type="submit" style="color: red; border: none; background: none; cursor: pointer;">
+                                        Delete
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                 }
@@ -45,7 +53,7 @@ else
     </div>
 
     <!-- График справа -->
-    <div style="width: 60%; padding-left: 5%; height: 500px;">
+    <div style="width: 60%; padding-left: 3%; height: 500px;">
         <canvas id="productChart"></canvas>
     </div>
 </div>
