@@ -16,7 +16,7 @@ namespace StockTracker.Services.ParsersServices
 
                 BlockNotifications(chromeOptions);
 
-                var driver = new ChromeDriver(chromeOptions);
+                var driver = new ChromeDriver(".\\chromedriver.exe", chromeOptions);
                 driver.Url = url;
                 return driver;
             }
