@@ -8,7 +8,7 @@ namespace StockTracker.Services.ParsersServices
     {
         #region Вспомогательные методы
 
-        public static IWebDriver CreateWebDriver(ProxyService proxyService, string url)
+        public static IWebDriver CreateWebDriver(string driverDirectory, ProxyService proxyService, string url)
         {
             try
             {
@@ -16,7 +16,7 @@ namespace StockTracker.Services.ParsersServices
 
                 BlockNotifications(chromeOptions);
 
-                var driver = new ChromeDriver(".\\chromedriver.exe", chromeOptions);
+                var driver = new ChromeDriver(driverDirectory, chromeOptions);
                 driver.Url = url;
                 return driver;
             }

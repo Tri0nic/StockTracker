@@ -9,15 +9,17 @@ namespace StockTracker.Parsers
         public string ShopName => "Яндекс Маркет";
 
         private readonly ProxyService _proxyService;
+        private readonly string _driverDirectory;
 
-        public YandexMarketParser(ProxyService proxyService)
+        public YandexMarketParser(ProxyService proxyService, string driverDirectory)
         {
             _proxyService = proxyService;
+            _driverDirectory = driverDirectory;
         }
 
         public async Task<string> Parse(string url)
         {
-            using (var driver = CreateWebDriver(_proxyService, url))
+            using (var driver = CreateWebDriver(_driverDirectory, _proxyService, url))
             {
                 try
                 {

@@ -9,16 +9,17 @@ namespace StockTracker.Parsers
         public string ShopName => "Мосигра";
 
         private readonly ProxyService _proxyService;
+        private readonly string _driverDirectory;
 
-        public MosigraParser(ProxyService proxyService)
+        public MosigraParser(ProxyService proxyService, string driverDirectory)
         {
             _proxyService = proxyService;
-        
+            _driverDirectory = driverDirectory;
         }
 
         public async Task<string> Parse(string url)
         {
-            using (var driver = CreateWebDriver(_proxyService, url))
+            using (var driver = CreateWebDriver(_driverDirectory, _proxyService, url))
             {
                 try
                 {
