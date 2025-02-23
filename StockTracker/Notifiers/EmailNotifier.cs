@@ -3,22 +3,25 @@ using System.Net;
 using StockTracker.Configurations;
 using Microsoft.Extensions.Options;
 using StockTracker.Services.NotifiersServices;
+using StockTracker.Notifiers.LettersCreators;
 namespace StockTracker.Notifiers
 {
-    public class EmailNotifier : IMessageService
+    public class EmailNotifier : INotifierService
     {
         private readonly EmailSettings _emailSettings;
 
         public string ServiceName => "Email";
         public bool IsEnabled { get; set; }
+        public ILetter Letter { get; }
 
-        public EmailNotifier(IOptions<EmailSettings> emailSettings)
+        public EmailNotifier(IOptions<EmailSettings> emailSettings, ILetter letter)
         {
             _emailSettings = emailSettings.Value;
             IsEnabled = false;
+            Letter = letter;
         }
 
-        public void SendMessage(string message)
+        public async Task SendMessage(string message)
         {
             using (SmtpClient smtpClient = new SmtpClient(_emailSettings.Server, _emailSettings.Port))
             {
