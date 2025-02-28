@@ -2,9 +2,9 @@
 
 namespace StockTracker.Notifiers.LettersCreators
 {
-    public class TelegramLetter : ILetter
+    public class TelegramLetter
     {
-        public string Create(IEnumerable<Product> availableProducts)
+        public static string Create(IEnumerable<Product> availableProducts)
         {
             var letter = "Магазин | Товар | Количество\n";
 
@@ -12,7 +12,7 @@ namespace StockTracker.Notifiers.LettersCreators
             {
                 letter += $"{product.Shop} | {product.ProductName} | {product.ProductCount}\n";
             }
-            //{product.Link}
+            
             return letter;
         }
     }

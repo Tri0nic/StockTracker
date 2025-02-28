@@ -19,14 +19,12 @@ builder.Services.AddTransient<ProxyService>();
 builder.Services.AddTransient<INotifierService, EmailNotifier>();
 builder.Services.AddTransient<INotifierService, TelegramNotifier>();
 
-builder.Services.AddTransient<ILetter, TelegramLetter>();
-builder.Services.AddTransient<ILetter, EmailLetter>();
-
 builder.Services.AddTransient<IParser, MosigraParser>();
 builder.Services.AddTransient<IParser, YandexMarketParser>();
 builder.Services.AddTransient<IParser, HobbyGamesParser>();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("TelegramSettings"));
 
 
 builder.Services.AddControllersWithViews();

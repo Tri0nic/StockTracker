@@ -4,6 +4,7 @@ using StockTracker.Configurations;
 using Microsoft.Extensions.Options;
 using StockTracker.Services.NotifiersServices;
 using StockTracker.Notifiers.LettersCreators;
+using StockTracker.Models;
 namespace StockTracker.Notifiers
 {
     public class EmailNotifier : INotifierService
@@ -12,13 +13,11 @@ namespace StockTracker.Notifiers
 
         public string ServiceName => "Email";
         public bool IsEnabled { get; set; }
-        public ILetter Letter { get; }
 
-        public EmailNotifier(IOptions<EmailSettings> emailSettings, ILetter letter)
+        public EmailNotifier(IOptions<EmailSettings> emailSettings)
         {
             _emailSettings = emailSettings.Value;
             IsEnabled = false;
-            Letter = letter;
         }
 
         public async Task SendMessage(string message)
@@ -67,6 +66,11 @@ namespace StockTracker.Notifiers
             {
                 mailMessage.To.Add(recipient);
             }
+        }
+
+        public string CreateLetter(IEnumerable<Product> availableProducts)
+        {
+            return EmailLetter.Create(availableProducts);
         }
     }
 }
