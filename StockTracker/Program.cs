@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using StockTracker.Configurations;
 using StockTracker.Data;
 using StockTracker.Notifiers;
-using StockTracker.Notifiers.LettersCreators;
 using StockTracker.Parsers;
 using StockTracker.Services.NotifiersServices;
 using StockTracker.Services.ParsersServices;

@@ -8,7 +8,7 @@
 
 <!-- Настройки отправки уведомлений -->
 <div>
-    <form asp-action="SendNotifications" method="post">
+    <form id="notificationForm" asp-action="SendNotifications" method="post">
         @if (ViewBag.Services != null)
         {
             @foreach (var service in ViewBag.Services)
@@ -23,42 +23,76 @@
         <div>
             <label>
                 Frequency (minutes):
-                <input type="number" name="frequencyInMinutes" value="@ViewBag.FrequencyInMinutes" min="1" class="form-control" />
+                <input type="number" name="frequencyInMinutes" id="frequencyInput" value="@ViewBag.FrequencyInMinutes" min="1" class="form-control" />
             </label>
         </div>
-        <button type="submit" class="btn btn-success">Start</button>
+        <button type="submit" id="startButton" class="btn btn-success">Start</button>
+
+        <!-- Таймер обратного отсчета -->
+        <div>
+            <h3>Next notification in: <span id="countdownTimer">00:00</span></h3>
+        </div>
     </form>
-</div>
 
-<!-- TODO: Таймер обратного отсчета -->
-<div>
-    <h3>Next notification in: <span id="countdownTimer">@ViewBag.FrequencyInMinutes:00</span></h3>
-</div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("notificationForm");
+            const countdownDisplay = document.getElementById("countdownTimer");
+            let countdownInterval;
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const frequencyInMinutes = parseInt("@ViewBag.FrequencyInMinutes" || 5) * 60; // Convert minutes to seconds
-        let timeLeft = frequencyInMinutes;
+            function startCountdown(frequencyInMinutes) {
+                let timeLeft = frequencyInMinutes * 60;
+                updateDisplay(timeLeft);
+                countdownInterval = setInterval(function() {
+                    timeLeft--;
+                    if (timeLeft < 0) {
+                        clearInterval(countdownInterval);
 
-        function updateTimer() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById("countdownTimer").textContent =
-                `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-            if (timeLeft > 0) {
-                timeLeft--;
-            } else {
-                timeLeft = frequencyInMinutes; // Reset timer
+                        return;
+                    }
+                    updateDisplay(timeLeft);
+                }, 1000);
             }
-        }
 
-        // Update timer every second
-        setInterval(updateTimer, 1000);
-        updateTimer(); // Initial call to set the timer immediately
-    });
-</script>
+            function updateDisplay(timeLeft) {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownDisplay.textContent =
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
 
+            form.addEventListener("submit", function(e) {
+                e.preventDefault(); // Отменяем стандартную отправку формы
+
+                // Получаем значение частоты из поля ввода
+                const frequencyInput = document.getElementById("frequencyInput");
+                const frequencyInMinutes = parseInt(frequencyInput.value);
+
+                // Запускаем обратный отсчет
+                startCountdown(frequencyInMinutes);
+
+                // Отправляем данные формы на сервер через AJAX
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    // Если сервер выполняет Redirect, можно обработать это так:
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log("Server response:", data);
+                    // Дополнительная обработка ответа сервера, если необходимо
+                })
+                .catch(error => console.error('Ошибка:', error));
+            });
+        });
+    </script>
+</div>
 
 <p>
     <a asp-action="Create">Create New</a>
