@@ -138,11 +138,9 @@
                     @Html.DisplayFor(modelItem => item.ParseDate)
                 </td>
                 <td>
-                    <form asp-action="UpdateIsTracked" method="post" style="display:inline;">
+                    <form class="update-tracked-form" asp-action="UpdateIsTracked" method="post" style="display:inline;">
                         <input type="hidden" name="id" value="@item.Id" />
-                        <input type="checkbox" name="isTracked" value="true"
-                        @(item.IsTracked ? "checked" : "")
-                               onchange="this.form.submit();" />
+                        <input type="checkbox" name="isTracked" value="true" class="update-tracked-checkbox" @(item.IsTracked ? "checked" : "") />
                     </form>
                 </td>
                 <td>
@@ -154,3 +152,38 @@
     </tbody>
 </table>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Находим все чекбоксы, отвечающие за обновление IsTracked
+        const trackedCheckboxes = document.querySelectorAll(".update-tracked-checkbox");
+
+        trackedCheckboxes.forEach(function(checkbox) {
+            checkbox.addEventListener("change", function (e) {
+                // Находим форму, к которой принадлежит чекбокс
+                const form = e.target.closest("form");
+                // Собираем данные формы
+                const formData = new FormData(form);
+
+                // Отправляем данные асинхронно через fetch
+                fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Ошибка при обновлении данных");
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log("Успешно обновлено", data);
+                    // Здесь можно обновить UI или показать уведомление об успехе
+                })
+                .catch(error => console.error("Ошибка:", error));
+            });
+        });
+    });
+</script>
