@@ -4,7 +4,7 @@
 
 Скачать актуальую версию ChromeDriver можно по ссылке: https://googlechromelabs.github.io/chrome-for-testing/
 
-![image](https://github.com/user-attachments/assets/9eb86fc3-96b7-41b2-ace4-a96d4e239ac5)
+![image](https://github.com/user-attachments/assets/5838e70b-8c80-4aa7-a3e5-b36df5f406e9)
 
 ![image](https://github.com/user-attachments/assets/bf2aa05e-c03a-48bc-b22a-8fd8f2e421a3)
 
