@@ -19,34 +19,34 @@ else
 <!-- Таблица с товаром по дате -->
 <div style="display: flex;">
     <!-- Таблица слева -->
-    <div style="width: 37%;">
+    <div style="width: 39%;">
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 15%;">@Html.DisplayNameFor(model => model.ProductCount)</th>
-                    <th style="width: 13%;">@Html.DisplayNameFor(model => model.ParseDate)</th>
-                    <th style="width: 10%;"></th>
+                    <th style="width: 12%;">@Html.DisplayNameFor(model => model.ProductCount)</th>
+                    <th style="width: 15%;">@Html.DisplayNameFor(model => model.ParseDate)</th>
+                    <th style="width: 15%;"></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
-                        <tr>
-                            <td>@Html.DisplayFor(modelItem => item.ProductCount)</td>
-                            <td>@Html.DisplayFor(modelItem => item.ParseDate)</td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                <form asp-action="DeleteStatistics" method="post" style="display:inline;">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <input type="hidden" name="ProductName" value="@Model.First().ProductName" />
-                                    <input type="hidden" name="Shop" value="@Model.First().Shop" />
-                                    <button type="submit" style="color: red; border: none; background: none; cursor: pointer;">
-                                        Delete
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.ProductCount)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ParseDate)</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary mx-1">
+                                Edit
+                            </a>
+                            <form asp-action="DeleteStatistics" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <input type="hidden" name="ProductName" value="@Model.First().ProductName" />
+                                <input type="hidden" name="Shop" value="@Model.First().Shop" />
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>

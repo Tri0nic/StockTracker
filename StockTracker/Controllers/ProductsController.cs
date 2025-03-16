@@ -72,6 +72,7 @@ namespace StockTracker.Controllers
 
                 _context.Add(product);
                 await _context.SaveChangesAsync();
+                TempData["success"] = "Category created successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -90,6 +91,7 @@ namespace StockTracker.Controllers
             {
                 return NotFound();
             }
+
             return View(product);
         }
 
@@ -125,6 +127,8 @@ namespace StockTracker.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["success"] = "Category edited successfully";
+
             return View(product);
         }
 
@@ -160,8 +164,10 @@ namespace StockTracker.Controllers
             {
                 _context.Product.Remove(product);
             }
-            
             await _context.SaveChangesAsync();
+
+            TempData["success"] = "Category deleted successfully";
+
             return RedirectToAction(nameof(Index));
         }
 
