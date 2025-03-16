@@ -4,33 +4,48 @@
     ViewData["Title"] = "Products";
 }
 
-<h1>Products</h1>
-
 <!-- Настройки отправки уведомлений -->
 <div>
     <form id="notificationForm" asp-action="SendNotifications" method="post">
-        @if (ViewBag.Services != null)
-        {
-            @foreach (var service in ViewBag.Services)
-            {
+        <!-- Контейнер с flexbox -->
+        <div class="d-flex justify-content-center align-items-center">
+            <!-- Левая колонка: список нотификаторов -->
+            <div class="text-center me-5">
+                <!-- me-5 добавляет отступ вправо -->
+                @if (ViewBag.Services != null)
+                {
+                    foreach (var service in ViewBag.Services)
+                    {
+                        <label class="d-block text-start">
+                            <input type="checkbox" class="update-notifier-checkbox" name="servicePreferences[@service.ServiceName]" value="true" @(service.IsEnabled ? "checked" : "") />
+                            Enable @service.ServiceName Notifications
+                        </label>
+                    }
+                }
+            </div>
+
+            <!-- Правая колонка: поле ввода -->
+            <div class="text-center ms-5">
+                <!-- ms-5 добавляет отступ влево -->
                 <label>
-                    <input type="checkbox" name="servicePreferences[@service.ServiceName]" value="true" @(service.IsEnabled ? "checked" : "") />
-                    Enable @service.ServiceName Notifications
+                    Frequency (minutes):
+                    <input type="number" name="frequencyInMinutes" id="frequencyInput" value="@ViewBag.FrequencyInMinutes" min="1" class="form-control" />
                 </label>
-                <br />
-            }
-        }
-        <div>
-            <label>
-                Frequency (minutes):
-                <input type="number" name="frequencyInMinutes" id="frequencyInput" value="@ViewBag.FrequencyInMinutes" min="1" class="form-control" />
-            </label>
+            </div>
         </div>
-        <button type="submit" id="startButton" class="btn btn-success">Start</button>
+
+        <!-- Ряд с кнопкой, выровненной по центру -->
+        <div>
+            <div class="col-12 text-center">
+                <button type="submit" id="startButton" class="btn btn-danger mx-1 custom-width mt-4" style="width: 20%">Start</button>
+            </div>
+        </div>
 
         <!-- Таймер обратного отсчета -->
-        <div>
-            <h3>Next notification in: <span id="countdownTimer">00:00</span></h3>
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <h3>Next notification in: <span id="countdownTimer">00:00</span></h3>
+            </div>
         </div>
     </form>
 
@@ -95,29 +110,34 @@
 </div>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary float-end">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+        </svg> &nbsp;
+        Create New</a>
 </p>
 
 <!-- Таблица с товарами -->
 <table class="table">
     <thead>
         <tr>
-            <th style="width: 13%;">
+            <th style="width: 10%;">
                 @Html.DisplayNameFor(model => model.Shop)
             </th>
-            <th style="width: 40%;">
+            <th style="width: 39%;">
                 @Html.DisplayNameFor(model => model.ProductName)
             </th>
             <th style="width: 15%;">
                 @Html.DisplayNameFor(model => model.ProductCount)
             </th>
-            <th style="width: 13%;">
+            <th style="width: 12%;">
                 @Html.DisplayNameFor(model => model.ParseDate)
             </th>
-            <th style="width: 5%;">
+            <th style="width: 4%;">
                 @Html.DisplayNameFor(model => model.IsTracked)
             </th>
-            <th style="width: 10%;"></th>
+            <th style="width: 16%;"></th>
         </tr>
     </thead>
     <tbody>
@@ -128,11 +148,14 @@
                     @Html.DisplayFor(modelItem => item.Shop)
                 </td>
                 <td>
-                    @Html.Raw($"<a href='{item.Link}' target='_blank' rel='noopener noreferrer'>{item.ProductName}</a>")
+                    <a href="@item.Link" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary w-100 text-center">
+                        @item.ProductName
+                    </a>
                 </td>
                 <td>
-                    @* Здесь надо будет сделать цикл суммирующий все товары с одинаковым ProductName *@
-                    <a asp-action="Statistics" asp-route-ProductName="@item.ProductName" asp-route-Shop="@item.Shop">@Html.DisplayFor(modelItem => item.ProductCount)</a>
+                    <a asp-action="Statistics" asp-route-ProductName="@item.ProductName" asp-route-Shop="@item.Shop" class="btn btn-outline-primary w-100 text-center">
+                        @Html.DisplayFor(modelItem => item.ProductCount)
+                    </a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ParseDate)
@@ -144,8 +167,16 @@
                     </form>
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary mx-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                        </svg>
+                        Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger mx-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                        </svg>
+                        Delete</a>
                 </td>
             </tr>
         }
@@ -164,7 +195,6 @@
                 // Собираем данные формы
                 const formData = new FormData(form);
 
-                // Отправляем данные асинхронно через fetch
                 fetch(form.action, {
                     method: "POST",
                     body: formData,
@@ -180,7 +210,6 @@
                 })
                 .then(data => {
                     console.log("Успешно обновлено", data);
-                    // Здесь можно обновить UI или показать уведомление об успехе
                 })
                 .catch(error => console.error("Ошибка:", error));
             });
