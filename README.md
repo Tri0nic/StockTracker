@@ -6,6 +6,6 @@
 
 ![image](https://github.com/user-attachments/assets/5838e70b-8c80-4aa7-a3e5-b36df5f406e9)
 
-![image](https://github.com/user-attachments/assets/bf2aa05e-c03a-48bc-b22a-8fd8f2e421a3)
+![image](https://github.com/user-attachments/assets/afff0e4c-049d-42b4-93ad-abf51fcdab93)
 
 ![image](https://github.com/user-attachments/assets/0cf888b7-0c51-44d7-a4c6-9d1794b70ebd)
