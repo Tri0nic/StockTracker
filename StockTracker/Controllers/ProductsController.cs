@@ -210,6 +210,14 @@ namespace StockTracker.Controllers
         }
 
         [HttpPost]
+        public IActionResult StopProcess()
+        {
+            Console.WriteLine("Stopping the application...");
+            Environment.Exit(0);
+            return Ok();
+        }
+
+        [HttpPost]
         //TODO: Изменить название?
         public async Task<IActionResult> SendNotifications(Dictionary<string, bool> servicePreferences, int frequencyInMinutes)
         {

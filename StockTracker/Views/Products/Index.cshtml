@@ -7,11 +7,8 @@
 <!-- Настройки отправки уведомлений -->
 <div>
     <form id="notificationForm" asp-action="SendNotifications" method="post">
-        <!-- Контейнер с flexbox -->
         <div class="d-flex justify-content-center align-items-center">
-            <!-- Левая колонка: список нотификаторов -->
             <div class="text-center me-5">
-                <!-- me-5 добавляет отступ вправо -->
                 @if (ViewBag.Services != null)
                 {
                     foreach (var service in ViewBag.Services)
@@ -24,9 +21,7 @@
                 }
             </div>
 
-            <!-- Правая колонка: поле ввода -->
             <div class="text-center ms-5">
-                <!-- ms-5 добавляет отступ влево -->
                 <label>
                     Frequency (minutes):
                     <input type="number" name="frequencyInMinutes" id="frequencyInput" value="@ViewBag.FrequencyInMinutes" min="1" class="form-control" />
@@ -34,11 +29,9 @@
             </div>
         </div>
 
-        <!-- Ряд с кнопкой, выровненной по центру -->
-        <div>
-            <div class="col-12 text-center">
-                <button type="submit" id="startButton" class="btn btn-danger mx-1 custom-width mt-4" style="width: 20%">Start</button>
-            </div>
+        <div class="col-12 text-center">
+            <button type="submit" id="startButton" class="btn btn-danger mx-1 custom-width mt-4" style="width: 20%">Start</button>
+            <button type="button" id="stopButton" class="btn btn-primary mx-1 custom-width mt-4" style="width: 20%">Stop</button>
         </div>
 
         <!-- Таймер обратного отсчета -->
@@ -51,61 +44,76 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById("notificationForm");
-            const countdownDisplay = document.getElementById("countdownTimer");
-            let countdownInterval;
+    const form = document.getElementById("notificationForm");
+    const countdownDisplay = document.getElementById("countdownTimer");
+    const stopButton = document.getElementById("stopButton");
+    let countdownInterval;
 
-            function startCountdown(frequencyInMinutes) {
-                let timeLeft = frequencyInMinutes * 60;
-                updateDisplay(timeLeft);
-                countdownInterval = setInterval(function() {
-                    timeLeft--;
-                    if (timeLeft < 0) {
-                        clearInterval(countdownInterval);
-
-                        return;
-                    }
-                    updateDisplay(timeLeft);
-                }, 1000);
+    function startCountdown(frequencyInMinutes) {
+        let timeLeft = frequencyInMinutes * 60;
+        updateDisplay(timeLeft);
+        countdownInterval = setInterval(function() {
+            timeLeft--;
+            if (timeLeft < 0) {
+                clearInterval(countdownInterval);
+                return;
             }
+            updateDisplay(timeLeft);
+        }, 1000);
+    }
 
-            function updateDisplay(timeLeft) {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                countdownDisplay.textContent =
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    function updateDisplay(timeLeft) {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        countdownDisplay.textContent =
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const frequencyInput = document.getElementById("frequencyInput");
+        const frequencyInMinutes = parseInt(frequencyInput.value);
+        startCountdown(frequencyInMinutes);
+
+        const formData = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
             }
+            return response.text();
+        })
+        .then(data => {
+            console.log("Server response:", data);
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
 
-            form.addEventListener("submit", function(e) {
-                e.preventDefault(); // Отменяем стандартную отправку формы
+    stopButton.addEventListener("click", function() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+        countdownDisplay.textContent = "00:00";
 
-                // Получаем значение частоты из поля ввода
-                const frequencyInput = document.getElementById("frequencyInput");
-                const frequencyInMinutes = parseInt(frequencyInput.value);
-
-                // Запускаем обратный отсчет
-                startCountdown(frequencyInMinutes);
-
-                // Отправляем данные формы на сервер через AJAX
-                const formData = new FormData(form);
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    // Если сервер выполняет Redirect, можно обработать это так:
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    console.log("Server response:", data);
-                    // Дополнительная обработка ответа сервера, если необходимо
-                })
-                .catch(error => console.error('Ошибка:', error));
-            });
+        fetch("/Products/StopProcess", {
+            method: "POST"
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("Application is stopping...");
+            } else {
+                console.error("Failed to stop the application");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
+    });
+});
     </script>
 </div>
 
