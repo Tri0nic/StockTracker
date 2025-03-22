@@ -10,11 +10,13 @@ namespace StockTracker.Parsers
 
         private readonly ProxyService _proxyService;
         private readonly string _driverDirectory;
+        private readonly ILogger<YandexMarketParser> _logger;
 
-        public YandexMarketParser(ProxyService proxyService, string driverDirectory)
+        public YandexMarketParser(ProxyService proxyService, string driverDirectory, ILogger<YandexMarketParser> logger)
         {
             _proxyService = proxyService;
             _driverDirectory = driverDirectory;
+            _logger = logger;
         }
 
         public async Task<string> Parse(string url)
@@ -23,19 +25,23 @@ namespace StockTracker.Parsers
             {
                 try
                 {
+                    _logger.LogInformation("Начат парсинг страницы: {Url}", url);
+
                     if (!IsElementAvailable(driver, "//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))
                     {
-                        Console.WriteLine("Нет в наличии");
+                        _logger.LogWarning("Товар отсутствует в наличии: {Url}", url);
                         return "Нет в наличии";
                     }
                     else
                     {
-                        return CountProducts(driver).ToString();
+                        int count = CountProducts(driver, _logger);
+                        _logger.LogInformation("Успешно получено количество товара: {Count} для {Url}", count, url);
+                        return count.ToString();
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Не удалось спарсить");
+                    _logger.LogError(ex, "Ошибка при парсинге страницы: {Url}", url);
                     return "Не удалось спарсить";
                 }
             }

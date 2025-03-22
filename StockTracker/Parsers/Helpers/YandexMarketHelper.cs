@@ -6,9 +6,9 @@ namespace StockTracker.Parsers.Helpers
 {
     public abstract class YandexMarketHelper
     {
-        public static int CountProducts(IWebDriver driver)
+        public static int CountProducts(IWebDriver driver, ILogger logger)
         {
-            CloseUncessaryWindows(driver);
+            CloseUncessaryWindows(driver, logger);
 
             ClickElement(driver, "//button[@data-auto='cartButton']");
             JSHumanSimulation(driver);
@@ -20,20 +20,23 @@ namespace StockTracker.Parsers.Helpers
 
             ClickElement(driver, "//button[@aria-label='Увеличить']");
 
-            return int.Parse(GetAttribute(driver, "//input[@aria-label='Количество товара']"));
+            var countStr = GetAttribute(driver, "//input[@aria-label='Количество товара']");
+            logger.LogDebug("Извлечено значение количества: {Count}", countStr);
+
+            return int.Parse(countStr);
         }
 
-        private static void CloseUncessaryWindows(IWebDriver driver)
+        private static void CloseUncessaryWindows(IWebDriver driver, ILogger logger)
         {
             try
             {
                 var closeButton = driver.FindElement(By.XPath("//div[@aria-label='Закрыть']"));
                 ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", closeButton);
+                logger.LogDebug($"Закрыто всплывающее окно.");
             }
             catch (Exception)
             {
-                //Заменить на Log
-                Console.WriteLine("Всплывающих окон не обнаружено!");
+                logger.LogDebug("Всплывающих окон не обнаружено.");
             }
         }
     }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using StockTracker.Configurations;
 using StockTracker.Data;
 using StockTracker.Notifiers;
@@ -6,7 +7,20 @@ using StockTracker.Parsers;
 using StockTracker.Services.NotifiersServices;
 using StockTracker.Services.ParsersServices;
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.File("Logs/log-all.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(le =>
+            le.Properties.ContainsKey("SourceContext") &&
+            le.Properties["SourceContext"].ToString().Contains("StockTracker"))
+        .WriteTo.File("Logs/log-mine.txt", rollingInterval: RollingInterval.Day))
+
+    .WriteTo.Console()
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 builder.Services.AddDbContext<StockTrackerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("StockTrackerContext") ?? throw new InvalidOperationException("Connection string 'StockTrackerContext' not found.")));
 builder.Services.AddSingleton(builder.Configuration["DriverDirectory"]);
