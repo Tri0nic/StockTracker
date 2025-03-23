@@ -1,4 +1,6 @@
-﻿using StockTracker.Models;
+﻿using StockTracker.Data;
+using StockTracker.Models;
+using StockTracker.Services.NotifiersServices;
 
 namespace StockTracker.Services.ParsersServices
 {
@@ -13,7 +15,7 @@ namespace StockTracker.Services.ParsersServices
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Product>> ParseProducts(IEnumerable<Product> products)
+        private async Task<IEnumerable<Product>> ParseProducts(IEnumerable<Product> products)
         {
             var availableProducts = new List<Product>();
 
@@ -58,6 +60,37 @@ namespace StockTracker.Services.ParsersServices
             };
 
             return newProduct;
+        }
+
+        public bool ProductExists(int id, StockTrackerContext context)
+        {
+            return (context.Product?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public async Task ParseAndNotify(IEnumerable<Product> products, StockTrackerContext context, NotificationService notificationService)
+        {
+            var allProducts = await ParseProducts(products);
+
+            AddProductsToContext(allProducts, context);
+
+            await context.SaveChangesAsync();
+            _logger.LogInformation("Успешное сохранение в БД");
+
+            var availableProducts = allProducts.Where(p => int.TryParse(p.ProductCount, out _)).ToList();
+
+            if (availableProducts.Any())
+            {
+                _logger.LogInformation("Запуск рассылки уведомлений...");
+                notificationService.Notify(availableProducts);
+            }
+        }
+
+        private void AddProductsToContext(IEnumerable<Product> allProducts, StockTrackerContext context)
+        {
+            foreach (var product in allProducts)
+            {
+                context.Add(product);
+            }
         }
     }
 }

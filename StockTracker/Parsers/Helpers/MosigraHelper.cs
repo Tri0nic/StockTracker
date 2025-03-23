@@ -28,7 +28,7 @@ namespace StockTracker.Parsers.Helpers
         private static int IterativeProductCount(IWebDriver driver, ILogger logger)
         {
             var count = 0;
-            var maxStockValue = 30;
+            var maxStockValue = 10;
             while (maxStockValue != 0)
             {
                 JSClickElement(driver, "//input[@class='visually-hidden']"); //Нажимаем на кнопку самовывоза

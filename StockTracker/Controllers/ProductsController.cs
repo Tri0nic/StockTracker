@@ -116,7 +116,7 @@ namespace StockTracker.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!_parserService.ProductExists(product.Id, _context))
                     {
                         return NotFound();
                     }
@@ -240,7 +240,7 @@ namespace StockTracker.Controllers
                     try
                     {
                         _isRunning = true;
-                        await ParseAndNotify(products);
+                        await _parserService.ParseAndNotify(products, _context, _notificationService);
                     }
                     catch (Exception ex)
                     {
@@ -262,31 +262,6 @@ namespace StockTracker.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-        }
-
-        private async Task ParseAndNotify(IEnumerable<Product> products)
-        {
-            var allProducts = await _parserService.ParseProducts(products);
-
-            // Вынести в отдельный метод
-            foreach (var product in allProducts)
-            {
-                _context.Add(product);
-            }
-
-            await _context.SaveChangesAsync();
-
-            var availableProducts = allProducts.Where(p => int.TryParse(p.ProductCount, out _)).ToList();
-
-            if (availableProducts.Any())
-            {
-                _notificationService.Notify(availableProducts);
-            }
-        }
-
-        private bool ProductExists(int id)
-        {
-          return (_context.Product?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         // GET: Products/Statistics

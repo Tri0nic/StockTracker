@@ -9,13 +9,12 @@ using StockTracker.Services.ParsersServices;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.File("Logs/log-all.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("Logs/all/log-all.txt", rollingInterval: RollingInterval.Day)
     .WriteTo.Logger(lc => lc
         .Filter.ByIncludingOnly(le =>
             le.Properties.ContainsKey("SourceContext") &&
             le.Properties["SourceContext"].ToString().Contains("StockTracker"))
-        .WriteTo.File("Logs/log-mine.txt", rollingInterval: RollingInterval.Day))
-
+        .WriteTo.File("Logs/mine/log-mine.txt", rollingInterval: RollingInterval.Day))
     .WriteTo.Console()
     .CreateLogger();
 
