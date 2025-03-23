@@ -27,7 +27,7 @@ namespace StockTracker.Notifiers
 
         public async Task SendMessage(string message)
         {
-            _logger.LogInformation($"Формирование сообщения и отправка его в telegram...");
+            _logger.LogInformation($"Отправка сообщения в telegram...");
             try
             {
                 Send(message);

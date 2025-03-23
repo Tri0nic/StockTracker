@@ -24,7 +24,7 @@ namespace StockTracker.Notifiers
 
         public async Task SendMessage(string message)
         {
-            _logger.LogInformation($"Формирование письма и отправка его на email...");
+            _logger.LogInformation($"Отправка письма на email...");
             using (SmtpClient smtpClient = new SmtpClient(_emailSettings.Server, _emailSettings.Port))
             {
                 SettingSmtpClient(smtpClient);

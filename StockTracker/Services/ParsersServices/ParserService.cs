@@ -5,19 +5,22 @@ namespace StockTracker.Services.ParsersServices
     public class ParserService
     {
         private readonly Dictionary<string, IParser> _parsers;
+        private readonly ILogger<ParserService> _logger;
 
-        public ParserService(IEnumerable<IParser> parsers)
+        public ParserService(IEnumerable<IParser> parsers, ILogger<ParserService> logger)
         {
             _parsers = parsers.ToDictionary(parsers => parsers.ShopName);
+            _logger = logger;
         }
 
         public async Task<IEnumerable<Product>> ParseProducts(IEnumerable<Product> products)
         {
             var availableProducts = new List<Product>();
 
+            _logger.LogInformation("Парсинг продуктов...");
             foreach (var product in products)
             {
-                await Console.Out.WriteLineAsync($"\nНачали парсинг! {product.ProductName}\n");
+                _logger.LogInformation($"Начат парсинг товара: {product.Shop} --- {product.ProductName}");
 
                 var parserResult = ParseProduct(product).Result;
 
@@ -25,15 +28,20 @@ namespace StockTracker.Services.ParsersServices
 
                 availableProducts.Add(CreateParsedProduct(product, parserResult));
             }
+            _logger.LogInformation("Все продукты были спаршены...");
+
             return availableProducts;
         }
 
         public async Task<string> ParseProduct(Product product)
         {
-            if (_parsers.TryGetValue(product.Shop, out var parser))
-                return await parser.Parse(product);
-            else
+            if (!_parsers.TryGetValue(product.Shop, out var parser))
+            {
+                _logger.LogError($"Парсинг для магазина {product.Shop} не реализован.");
                 throw new NotImplementedException($"Парсинг для магазина {product.Shop} не реализован.");
+            }
+
+            return await parser.Parse(product);
         }
 
         private Product CreateParsedProduct(Product product, string parserResult)

@@ -26,8 +26,6 @@ namespace StockTracker.Parsers
             {
                 try
                 {
-                    _logger.LogInformation($"Начат парсинг товара: {product.Shop} --- {product.ProductName}");
-
                     if (!IsElementAvailable(driver, "//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))
                     {
                         _logger.LogWarning($"Товар отсутствует в наличии");

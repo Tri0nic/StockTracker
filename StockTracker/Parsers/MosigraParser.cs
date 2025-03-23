@@ -26,8 +26,6 @@ namespace StockTracker.Parsers
             {
                 try
                 {
-                    _logger.LogInformation($"Начат парсинг товара: {product.Shop} --- {product.ProductName}");
-
                     ChooseRegion(driver, _logger);
 
                     if (!IsElementAvailable(driver, "//*[@id=\"app-main\"]/main/section[1]/article/section[1]/noindex/div/span[2]/b"))
