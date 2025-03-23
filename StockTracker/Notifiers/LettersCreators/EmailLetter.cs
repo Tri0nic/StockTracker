@@ -4,7 +4,7 @@ namespace StockTracker.Notifiers.LettersCreators
 {
     public class EmailLetter
     {
-        public static string Create(IEnumerable<Product> availableProducts)
+        public static string Create(IEnumerable<Product> availableProducts, ILogger logger)
         {
             var letter = "<table style='border-collapse: collapse; width: 85%;text-align: center; vertical-align: middle'>"
                          + "<tr><th style='border: 1px solid black; padding: 8px;text-align: center; vertical-align: middle'>Магазин</th>"
@@ -18,6 +18,7 @@ namespace StockTracker.Notifiers.LettersCreators
                         + $"<td style='border: 1px solid black; padding: 8px; width: 20%;text-align: center; vertical-align: middle'>{product.ProductCount}</td></tr>";
             }
             letter += "</table>";
+            logger.LogInformation("Письмо для почты сформировано успешно");
 
             return letter;
         }

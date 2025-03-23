@@ -10,18 +10,21 @@ namespace StockTracker.Notifiers
     public class EmailNotifier : INotifierService
     {
         private readonly EmailSettings _emailSettings;
+        private readonly ILogger<EmailNotifier> _logger;
 
         public string ServiceName => "Email";
         public bool IsEnabled { get; set; }
 
-        public EmailNotifier(IOptions<EmailSettings> emailSettings)
+        public EmailNotifier(IOptions<EmailSettings> emailSettings, ILogger<EmailNotifier> logger)
         {
             _emailSettings = emailSettings.Value;
             IsEnabled = false;
+            _logger = logger;
         }
 
         public async Task SendMessage(string message)
         {
+            _logger.LogInformation($"Формирование письма и отправка его на email...");
             using (SmtpClient smtpClient = new SmtpClient(_emailSettings.Server, _emailSettings.Port))
             {
                 SettingSmtpClient(smtpClient);
@@ -34,12 +37,11 @@ namespace StockTracker.Notifiers
                     try
                     {
                         smtpClient.Send(mailMessage);
-                        Console.WriteLine(message);
-                        Console.WriteLine("Уведомление отправлено на email");
+                        _logger.LogInformation("Письмо отправлено на email");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Ошибка отправки сообщения: {ex.Message}");
+                        _logger.LogError($"Ошибка отправки сообщения: {ex.Message}");
                     }
                 }
             }
@@ -54,7 +56,7 @@ namespace StockTracker.Notifiers
         private void SettingMailMessage(MailMessage mailMessage, string message)
         {
             mailMessage.From = new MailAddress(_emailSettings.Username);
-            mailMessage.Subject = "Товар доступен на сайте";
+            mailMessage.Subject = "Товары доступны на сайте";
 
             mailMessage.IsBodyHtml = true;
             mailMessage.Body = message;
@@ -70,7 +72,7 @@ namespace StockTracker.Notifiers
 
         public string CreateLetter(IEnumerable<Product> availableProducts)
         {
-            return EmailLetter.Create(availableProducts);
+            return EmailLetter.Create(availableProducts, _logger);
         }
     }
 }

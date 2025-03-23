@@ -30,19 +30,19 @@ namespace StockTracker.Parsers
                     _logger.LogInformation($"Начат парсинг товара: {product.Shop} --- {product.ProductName}");
                     if (IsElementAvailable(driver, "//a[@id='ui-id-5']"))
                     {
-                        _logger.LogWarning($"Товар отсутствует в наличии: {product.Shop} --- {product.ProductName}");
+                        _logger.LogWarning($"Товар отсутствует в наличии");
                         return "Нет в наличии";
                     }
                     else
                     {
                         string count = CountProducts(driver, _logger);
-                        _logger.LogInformation($"Успешно получено количество товара: {count} для {product.Shop} --- {product.ProductName}");
+                        _logger.LogInformation($"Успешно получено количество товара: {count}");
                         return count;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Ошибка при парсинге товара: {product.Shop} --- {product.ProductName}");
+                    _logger.LogError(ex, $"Ошибка при парсинге товара");
                     return "Не удалось спарсить";
                 }
             }
