@@ -31,7 +31,7 @@ namespace StockTracker.Services.ParsersServices
         public async Task<string> ParseProduct(Product product)
         {
             if (_parsers.TryGetValue(product.Shop, out var parser))
-                return await parser.Parse(product.Link);
+                return await parser.Parse(product);
             else
                 throw new NotImplementedException($"Парсинг для магазина {product.Shop} не реализован.");
         }
