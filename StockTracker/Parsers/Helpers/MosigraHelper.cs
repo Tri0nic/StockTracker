@@ -22,13 +22,14 @@ namespace StockTracker.Parsers.Helpers
             JSClickElement(driver, "//button[@class='btn btn-block btn-cart btn-cart--full-fill buy__button icon-in-cart']"); // Переход в корзину
             JSClickElement(driver, "//a[@class='btn btn-change-step btn-red btn-order']"); // Перейти к оформлению
 
-            return IterativeProductCount(driver).ToString();
+            return IterativeProductCount(driver, logger).ToString();
         }
 
-        private static int IterativeProductCount(IWebDriver driver)
+        private static int IterativeProductCount(IWebDriver driver, ILogger logger)
         {
             var count = 0;
-            while (true)
+            var maxStockValue = 30;
+            while (maxStockValue != 0)
             {
                 JSClickElement(driver, "//input[@class='visually-hidden']"); //Нажимаем на кнопку самовывоза
                 JSHumanSimulation(driver);
@@ -41,12 +42,17 @@ namespace StockTracker.Parsers.Helpers
                 {
                     if (CountAvailableShops(shop, ref numberOfShops, ref count) == 0)
                     {
+                        logger.LogInformation($"Успешно получено количество товара: {count}");
                         return count;
                     }
                 }
 
                 JSClickElement(driver, "//a[@data-action='plus']"); // Увеличиваем число в корзине
+                maxStockValue--;
             }
+
+            logger.LogError($"Либо ошибка, либо слишком много товара");
+            return 404;
         }
 
         private static int CountAvailableShops(IWebElement shop, ref int numberOfShops, ref int count)

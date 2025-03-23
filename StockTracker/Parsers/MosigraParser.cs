@@ -36,7 +36,6 @@ namespace StockTracker.Parsers
                     else
                     {
                         string count = CountProducts(driver, _logger);
-                        _logger.LogInformation($"Успешно получено количество товара: {count}");
                         return count;
                     }
                 }
