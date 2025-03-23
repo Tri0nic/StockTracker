@@ -6,7 +6,7 @@ namespace StockTracker.Parsers.Helpers
 {
     public abstract class YandexMarketHelper
     {
-        public static int CountProducts(IWebDriver driver, ILogger logger)
+        public static string CountProducts(IWebDriver driver, ILogger logger)
         {
             CloseUncessaryWindows(driver, logger);
 
@@ -20,10 +20,7 @@ namespace StockTracker.Parsers.Helpers
 
             ClickElement(driver, "//button[@aria-label='Увеличить']");
 
-            var countStr = GetAttribute(driver, "//input[@aria-label='Количество товара']");
-            logger.LogDebug("Извлечено значение количества: {Count}", countStr);
-
-            return int.Parse(countStr);
+            return GetAttribute(driver, "//input[@aria-label='Количество товара']");
         }
 
         private static void CloseUncessaryWindows(IWebDriver driver, ILogger logger)

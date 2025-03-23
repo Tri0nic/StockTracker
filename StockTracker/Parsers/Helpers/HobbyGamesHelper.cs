@@ -6,9 +6,9 @@ namespace StockTracker.Parsers.Helpers
 {
     public abstract class HobbyGamesHelper
     {
-        public static string CountProducts(IWebDriver driver)
+        public static string CountProducts(IWebDriver driver, ILogger logger)
         {
-            OpenShopsMenue(driver);
+            OpenShopsMenue(driver, logger);
             return CountAvailableShops(driver).ToString();
         }
 
@@ -33,12 +33,13 @@ namespace StockTracker.Parsers.Helpers
             }
         }
 
-        private static void OpenShopsMenue(IWebDriver driver)
+        private static void OpenShopsMenue(IWebDriver driver, ILogger logger)
         {
             var optionsBar = driver.FindElements(By.XPath("//li[@class='flat-tab-nav__item ui-tabs-tab ui-corner-top ui-state-default ui-tab']"));
             var availability = optionsBar.Count() + 1;
 
             ClickElement(driver, $"//a[@id='ui-id-{availability}']");
+            logger.LogInformation($"Открыли список магазинов");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using StockTracker.Services.ParsersServices;
 using static StockTracker.Services.ParsersServices.SeleniumService;
 using static StockTracker.Parsers.Helpers.YandexMarketHelper;
+using StockTracker.Models;
 
 namespace StockTracker.Parsers
 {
@@ -19,29 +20,29 @@ namespace StockTracker.Parsers
             _logger = logger;
         }
 
-        public async Task<string> Parse(string url)
+        public async Task<string> Parse(Product product)
         {
-            using (var driver = CreateWebDriver(_driverDirectory, _proxyService, url))
+            using (var driver = CreateWebDriver(_driverDirectory, _proxyService, product.Link))
             {
                 try
                 {
-                    _logger.LogInformation("Начат парсинг страницы: {Url}", url);
+                    _logger.LogInformation($"Начат парсинг товара: {product.Shop} --- {product.ProductName}");
 
                     if (!IsElementAvailable(driver, "//*[@id=\"/content/page/fancyPage/emptyOfferSnippet\"]/div/div/div[2]/div/div/div[1]/h2"))
                     {
-                        _logger.LogWarning("Товар отсутствует в наличии: {Url}", url);
+                        _logger.LogWarning($"Товар отсутствует в наличии: {product.Shop} --- {product.ProductName}");
                         return "Нет в наличии";
                     }
                     else
                     {
-                        int count = CountProducts(driver, _logger);
-                        _logger.LogInformation("Успешно получено количество товара: {Count} для {Url}", count, url);
-                        return count.ToString();
+                        string count = CountProducts(driver, _logger);
+                        _logger.LogInformation($"Успешно получено количество товара: {count} для {product.Shop} --- {product.ProductName}");
+                        return count;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Ошибка при парсинге страницы: {Url}", url);
+                    _logger.LogError(ex, $"Ошибка при парсинге товара: {product.Shop} --- {product.ProductName}");
                     return "Не удалось спарсить";
                 }
             }
