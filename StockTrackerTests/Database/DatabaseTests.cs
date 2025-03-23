@@ -23,7 +23,7 @@ namespace StockTracker.Database.Tests
         {
             // Act
             var shopsWithMultipleTrackedItems = _context.Product
-                .GroupBy(s => s.Shop)
+                .GroupBy(s => new { s.Shop, s.ProductName })
                 .Where(g => g.Count(s => s.IsTracked) > 1)
                 .Select(g => g.Key)
                 .ToList();
@@ -31,7 +31,9 @@ namespace StockTracker.Database.Tests
             // Assert
             Xunit.Assert.True(
                 shopsWithMultipleTrackedItems.Count == 0,
-                $"Найдены магазины с более чем одним отслеживаемым товаром: {string.Join(", ", shopsWithMultipleTrackedItems)}");
+                shopsWithMultipleTrackedItems.Any()
+                ? $"Найдены магазины с более чем одним одинаковым отслеживаемым товаром: {string.Join(" --- ", shopsWithMultipleTrackedItems[0].Shop, shopsWithMultipleTrackedItems[0].ProductName)}"
+                : "Нет магазинов с более чем одним одинаковым отслеживаемым товаром.");
         }
     }
 }
