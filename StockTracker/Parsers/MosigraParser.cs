@@ -1,6 +1,7 @@
 ﻿using StockTracker.Services.ParsersServices;
 using static StockTracker.Services.ParsersServices.SeleniumService;
 using static StockTracker.Parsers.Helpers.MosigraHelper;
+using StockTracker.Models;
 
 namespace StockTracker.Parsers
 {
@@ -10,34 +11,40 @@ namespace StockTracker.Parsers
 
         private readonly ProxyService _proxyService;
         private readonly string _driverDirectory;
+        private readonly ILogger<MosigraParser> _logger;
 
-        public MosigraParser(ProxyService proxyService, string driverDirectory)
+        public MosigraParser(ProxyService proxyService, string driverDirectory, ILogger<MosigraParser> logger)
         {
             _proxyService = proxyService;
             _driverDirectory = driverDirectory;
+            _logger = logger;
         }
 
-        public async Task<string> Parse(string url)
+        public async Task<string> Parse(Product product)
         {
-            using (var driver = CreateWebDriver(_driverDirectory, _proxyService, url))
+            using (var driver = CreateWebDriver(_driverDirectory, _proxyService, product.Link))
             {
                 try
                 {
-                    ChooseRegion(driver);
+                    _logger.LogInformation($"Начат парсинг товара: {product.Shop} --- {product.ProductName}");
+
+                    ChooseRegion(driver, _logger);
 
                     if (!IsElementAvailable(driver, "//*[@id=\"app-main\"]/main/section[1]/article/section[1]/noindex/div/span[2]/b"))
                     {
-                        Console.WriteLine("Нет в наличии");
+                        _logger.LogWarning($"Товар отсутствует в наличии: {product.Shop} --- {product.ProductName}");
                         return "Нет в наличии";
                     }
                     else
                     {
-                        return CountProducts(driver).ToString();
+                        string count = CountProducts(driver, _logger);
+                        _logger.LogInformation($"Успешно получено количество товара: {count} для {product.Shop} --- {product.ProductName}");
+                        return count;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Не удалось спарсить");
+                    _logger.LogError(ex, $"Ошибка при парсинге товара: {product.Shop} --- {product.ProductName}");
                     return "Не удалось спарсить";
                 }
             }

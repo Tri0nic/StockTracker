@@ -6,13 +6,15 @@ namespace StockTracker.Parsers.Helpers
 {
     public abstract class MosigraHelper
     {
-        public static void ChooseRegion(IWebDriver driver)
+        public static void ChooseRegion(IWebDriver driver, ILogger logger)
         {
             ClickElement(driver, "//*[@id=\"app-main\"]/header/div[2]/div/div/div[1]/button"); // открываем список городов
             ClickElement(driver, "//*[@id=\"app-main\"]/header/div[1]/div/ul/li[1]/span/a"); // выбираем Москву
+
+            logger.LogInformation("Выбрали город");
         }
 
-        public static int CountProducts(IWebDriver driver)
+        public static string CountProducts(IWebDriver driver, ILogger logger)
         {
             JSHumanSimulation(driver);
 
@@ -20,7 +22,7 @@ namespace StockTracker.Parsers.Helpers
             JSClickElement(driver, "//button[@class='btn btn-block btn-cart btn-cart--full-fill buy__button icon-in-cart']"); // Переход в корзину
             JSClickElement(driver, "//a[@class='btn btn-change-step btn-red btn-order']"); // Перейти к оформлению
 
-            return IterativeProductCount(driver);
+            return IterativeProductCount(driver).ToString();
         }
 
         private static int IterativeProductCount(IWebDriver driver)
